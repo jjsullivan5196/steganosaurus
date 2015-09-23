@@ -90,13 +90,15 @@ def colorGreaterThan(color, comparison):
 ##END DEFS
 
 #Getting some basic info
-myImage = Image.open("out.png")
+args = sys.argv
+myImage = Image.open(args[1])
+#myImage = Image.open("out.png")
 #myImage = myImage.convert("RGB")
 xSize, ySize = myImage.size
 print("Width: " + str(xSize) + " Height: " + str(ySize) + " Total Pixel Number: " + str(xSize * ySize))
 
 f = []
-file = open("hidden.txt", 'w')
+file = open(str(args[2]), 'w')
 #Determining info for pixel selection
 maxBytes = xSize * ySize / 3
 pixList = myImage.getdata()

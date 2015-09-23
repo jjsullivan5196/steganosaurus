@@ -88,14 +88,17 @@ def colorGreaterThan(color, comparison):
 			return False
 	return True
 ##END DEFS
+args = sys.argv
 
 #Getting some basic info
-myImage = Image.open("pleasekillme.png")
-#myImage = myImage.convert("RGB")
+myImage = Image.open(str(args[1]))
+#myImage = Image.open("pleasekillme.png")
+myImage = myImage.convert("RGB")
 xSize, ySize = myImage.size
 print("Width: " + str(xSize) + " Height: " + str(ySize) + " Total Pixel Number: " + str(xSize * ySize))
 
-file = open("hello.txt", 'r')
+#file = open("hello.txt", 'r')
+file = open(str(args[2]), 'r')
 fiList = list(file.readline())
 intFiList = []
 for e in fiList:
@@ -132,7 +135,7 @@ newPixList[1] = addColor(newPixList[1], col2)
 ##Add File Data to Image##
 ##########################
 for n in range(3, len(pixList)):
-	x, y, z, a = pixList[n]
+	x, y, z = pixList[n]
 	if((n + 1)%3==0):#(n + 1) % (pixelSpace + pixelShift) == 0):
 		#Write the data to a pixel
 		if(valIndex < len(intFiList)):
@@ -168,7 +171,7 @@ for n in range(3, len(pixList)):
 		xC = 0
 		yC += 1
 copyImage.putdata(newPixList)
-copyImage.save("out.png")
+copyImage.save(str(args[3]))
 print("Base Color " + str(pixList[2]))
 print(byteNum)
 print(col1)
