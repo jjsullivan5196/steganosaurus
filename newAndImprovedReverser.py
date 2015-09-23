@@ -48,22 +48,6 @@ def addColor(c1, c2):
 	B = (c1[2] + c2[2])
 	return (R, G, B)
 #For the super-simple message length recording
-def convertToBase255(number):
-	pow2 = 0
-	while(number >= 255):
-		print(str(number) + " > 255")
-		number -= 255
-		pow2 += 1
-	if(pow2 >= 255):
-		while(pow2 >= 255):
-			pow2 -= 255
-			pow3 += 1
-	else:
-		pow3 = 0
-	#(ones, 255s, 255^2s)
-	return (number, pow2, pow3)
-def convertFromBase255(threeTuple):
-	return threeTuple[0] + (threeTuple[1]*255) + (threeTuple[2]*255*255)
 #For NEW AND IMPROVED data hiding
 def base10ToColorTuple(num):
 	color = [0, 0, 0]
@@ -98,6 +82,11 @@ def base7ToColorTuple(num):
 	return tuple(color)
 def colorTupleToBase7(colorTuple):
 	return (colorTuple[0] + (colorTuple[1] * 7) + (colorTuple[2] * 49))
+def colorGreaterThan(color, comparison):
+	for x in range(len(color)):
+		if(color[x] < comparison[x]):
+			return False
+	return True
 ##END DEFS
 
 #Getting some basic info
@@ -147,7 +136,10 @@ for n in range(3, len(pixList)):
 			print("Neighbor average color: " + str(avgColor))
 			subColor = subtractColor((x, y, z), avgColor)
 			print("Un-Offsetted Data Color: " + str(subColor))
-			dataColor = addColor(subColor, (7, 7, 5))
+			if(colorGreaterThan(avgColor, (7, 7, 5))):
+				dataColor = addColor(subColor, (7, 7, 5))
+			else:
+				dataColor = subColor
 			print("Data Color: " + str(dataColor))
 			data = colorTupleToBase7(dataColor)
 			print(chr(data))

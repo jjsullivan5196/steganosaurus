@@ -48,22 +48,6 @@ def addColor(c1, c2):
 	B = (c1[2] + c2[2])
 	return (R, G, B)
 #For the super-simple message length recording
-def convertToBase255(number):
-	pow2 = 0
-	while(number >= 255):
-		print(str(number) + " > 255")
-		number -= 255
-		pow2 += 1
-	if(pow2 >= 255):
-		while(pow2 >= 255):
-			pow2 -= 255
-			pow3 += 1
-	else:
-		pow3 = 0
-	#(ones, 255s, 255^2s)
-	return (number, pow2, pow3)
-def convertFromBase255(threeTuple):
-	return threeTuple[0] + (threeTuple[1]*255) + (threeTuple[2]*255*255)
 #For NEW AND IMPROVED data hiding
 def base10ToColorTuple(num):
 	color = [0, 0, 0]
@@ -98,6 +82,11 @@ def base7ToColorTuple(num):
 	return tuple(color)
 def colorTupleToBase7(colorTuple):
 	return (colorTuple[0] + (colorTuple[1] * 7) + (colorTuple[2] * 49))
+def colorGreaterThan(color, comparison):
+	for x in range(len(color)):
+		if(color[x] < comparison[x]):
+			return False
+	return True
 ##END DEFS
 
 #Getting some basic info
@@ -152,7 +141,11 @@ for n in range(3, len(pixList)):
 			neighbor1, neighbor2 = pixList[n - 1], pixList[n + 1]
 			print(str(neighbor1) + " " + str(neighbor2))
 			print("Average Neighbor Color: " + str(averageColor(neighbor1, neighbor2)))
-			baseColor = subtractColor(averageColor(neighbor1, neighbor2), (7, 7, 5))
+			##Make sure the color is bright enough, if not just throw the thing on top
+			if(colorGreaterThan(averageColor(neighbor1, neighbor2), (7, 7, 5))):
+				baseColor = subtractColor(averageColor(neighbor1, neighbor2), (7, 7, 5))
+			else:
+				baseColor = averageColor(neighbor1, neighbor2)
 			print("Data color to be added: " + str(base7ToColorTuple(intFiList[valIndex])))
 			dataColor = addColor(baseColor, base7ToColorTuple(intFiList[valIndex]))
 			print(dataColor)
