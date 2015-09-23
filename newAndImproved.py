@@ -111,7 +111,7 @@ xC, yC = 0, 0
 dataPixList = []
 for n in range(len(pixList)):
 	x, y, z, a = pixList[n]
-	if((n + 1) % (pixelSpace + pixelShift) == 0):
+	if((n + 1)%3==0):#(n + 1) % (pixelSpace + pixelShift) == 0):
 		#Write the data to a pixel
 		if(valIndex < len(intFiList)):
 			print(str(xC) + " " + str(yC))
@@ -122,6 +122,7 @@ for n in range(len(pixList)):
 			baseColor = subtractColor(averageColor(neighbor1, neighbor2), (9, 9, 2))
 			print("Data color to be added: " + str(base10ToColorTuple(intFiList[valIndex])))
 			dataColor = addColor(baseColor, base10ToColorTuple(intFiList[valIndex]))
+			print(dataColor)
 			newPixList.append(dataColor)
 			valIndex += 1
 			pixelShift = getNewShift(pixelShift)

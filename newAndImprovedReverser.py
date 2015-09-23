@@ -107,7 +107,7 @@ for n in range(len(pixList)):
 		if(valIndex >= byteNum):
 			print("All bytes retrieved")
 			break
-		if((n + 1) % (pixelSpace + pixelShift) == 0):
+		if((n+1)%3 == 0):#(n + 1) % (pixelSpace + pixelShift) == 0):
 			#Write the data to a pixel
 			print(str(xC) + " " + str(yC))
 			print("RGB values " + str((x, y, z)))
@@ -121,8 +121,8 @@ for n in range(len(pixList)):
 			dataColor = addColor(subColor, (9, 9, 2))
 			print("Data Color: " + str(dataColor))
 			data = colorTupleToBase10(dataColor)
-			#print(chr(data))
-			f.append(str(data))
+			print(chr(data))
+			f.append(str(chr(data)))
 			valIndex += 1
 			pixelShift = getNewShift(pixelShift)
 			#######################
@@ -137,5 +137,5 @@ for n in range(len(pixList)):
 	if(xC > (xSize - 1)):
 		xC = 0
 		yC += 1
-outString = ','.join(f)
+outString = ''.join(f)
 file.write(outString)
