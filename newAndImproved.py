@@ -81,6 +81,23 @@ def base10ToColorTuple(num):
 	return tuple(color)
 def colorTupleToBase10(colorTuple):
 	return (colorTuple[0] + (colorTuple[1] * 10) + (colorTuple[2] * 100))
+	
+def base7ToColorTuple(num):
+	color = [0, 0, 0]
+	
+	hundreds = (num - (num%49))/49
+	color[2] = int(hundreds)
+	num -= hundreds * 49
+	
+	tens = (num - (num%7))/7
+	color[1] = int(tens)
+	num -= tens * 7
+	
+	color[0] = int(num)
+	
+	return tuple(color)
+def colorTupleToBase7(colorTuple):
+	return (colorTuple[0] + (colorTuple[1] * 7) + (colorTuple[2] * 49))
 ##END DEFS
 
 #Getting some basic info
@@ -107,9 +124,25 @@ valIndex = 0
 
 copyImage = Image.new('RGB', myImage.size)
 newPixList = []
-xC, yC = 0, 0
+xC, yC = 3, 0
 dataPixList = []
-for n in range(len(pixList)):
+#############################
+##Put in the file size data##
+#############################
+col1 = base10ToColorTuple(byteNum%1000) #First 3 digits
+col2 = base10ToColorTuple((byteNum - (byteNum%1000))/1000) #Last 3 digits
+##Replace the first 2 pixels with the third
+newPixList.append(pixList[2])
+newPixList.append(pixList[2])
+newPixList.append(pixList[2])
+newPixList[0] = subtractColor(newPixList[0], (9, 9, 9))
+newPixList[1] = subtractColor(newPixList[1], (9, 9, 9))
+newPixList[0] = addColor(newPixList[0], col1)
+newPixList[1] = addColor(newPixList[1], col2)
+##########################
+##Add File Data to Image##
+##########################
+for n in range(3, len(pixList)):
 	x, y, z, a = pixList[n]
 	if((n + 1)%3==0):#(n + 1) % (pixelSpace + pixelShift) == 0):
 		#Write the data to a pixel
@@ -119,9 +152,9 @@ for n in range(len(pixList)):
 			neighbor1, neighbor2 = pixList[n - 1], pixList[n + 1]
 			print(str(neighbor1) + " " + str(neighbor2))
 			print("Average Neighbor Color: " + str(averageColor(neighbor1, neighbor2)))
-			baseColor = subtractColor(averageColor(neighbor1, neighbor2), (9, 9, 2))
-			print("Data color to be added: " + str(base10ToColorTuple(intFiList[valIndex])))
-			dataColor = addColor(baseColor, base10ToColorTuple(intFiList[valIndex]))
+			baseColor = subtractColor(averageColor(neighbor1, neighbor2), (7, 7, 5))
+			print("Data color to be added: " + str(base7ToColorTuple(intFiList[valIndex])))
+			dataColor = addColor(baseColor, base7ToColorTuple(intFiList[valIndex]))
 			print(dataColor)
 			newPixList.append(dataColor)
 			valIndex += 1
@@ -136,13 +169,17 @@ for n in range(len(pixList)):
 			newPixList.append((x, y, z))
 		#######################
 	else:
-		if(xC == 0 and yC == 0):
-			newPixList.append(convertToBase255(byteNum))
-		else:
-			newPixList.append((x, y, z))
+		newPixList.append((x, y, z))
 	xC += 1
 	if(xC > (xSize - 1)):
 		xC = 0
 		yC += 1
 copyImage.putdata(newPixList)
 copyImage.save("out.png")
+print("Base Color " + str(pixList[2]))
+print(byteNum)
+print(col1)
+print(newPixList[0])
+print(col2)
+print(newPixList[1])
+input("Press Enter to continue...")

@@ -2,3 +2,6 @@
 - - use 3rd pixel color as dummy
 
 - Change data to base-7
+DONE-------------------------------------------------------------!
+
+-Detect if a pixel is simply too dark, and do something about it

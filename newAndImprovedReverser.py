@@ -81,6 +81,23 @@ def base10ToColorTuple(num):
 	return tuple(color)
 def colorTupleToBase10(colorTuple):
 	return (colorTuple[0] + (colorTuple[1] * 10) + (colorTuple[2] * 100))
+	
+def base7ToColorTuple(num):
+	color = [0, 0, 0]
+	
+	hundreds = (num - (num%49))/49
+	color[2] = int(hundreds)
+	num -= hundreds * 49
+	
+	tens = (num - (num%7))/7
+	color[1] = int(tens)
+	num -= tens * 7
+	
+	color[0] = int(num)
+	
+	return tuple(color)
+def colorTupleToBase7(colorTuple):
+	return (colorTuple[0] + (colorTuple[1] * 7) + (colorTuple[2] * 49))
 ##END DEFS
 
 #Getting some basic info
@@ -94,14 +111,26 @@ file = open("hidden.txt", 'w')
 #Determining info for pixel selection
 maxBytes = xSize * ySize / 3
 pixList = myImage.getdata()
-byteNum = convertFromBase255(pixList[0])
+#####################
+##Get The file size##
+#####################
+print("Base Color " + str(pixList[2]))
+col1 = pixList[0]
+col2 = pixList[1]
+col1 = addColor(col1, (9, 9, 9))
+col2 = addColor(col2, (9, 9, 9))
+col1 = subtractColor(col1, pixList[2])
+col2 = subtractColor(col2, pixList[2])
+byteNum = (colorTupleToBase10(col2) * 1000) + colorTupleToBase10(col1)
+
 print("Total Number of bytes to receive: " + str(byteNum))
+input("Press Enter to continue")
 pixelSpace = int(xSize * ySize / byteNum)
 pixelShift = 0
 valIndex = 0
 
 xC, yC = 0, 0
-for n in range(len(pixList)):
+for n in range(3, len(pixList)):
 	try:
 		x, y, z = pixList[n]
 		if(valIndex >= byteNum):
@@ -118,9 +147,9 @@ for n in range(len(pixList)):
 			print("Neighbor average color: " + str(avgColor))
 			subColor = subtractColor((x, y, z), avgColor)
 			print("Un-Offsetted Data Color: " + str(subColor))
-			dataColor = addColor(subColor, (9, 9, 2))
+			dataColor = addColor(subColor, (7, 7, 5))
 			print("Data Color: " + str(dataColor))
-			data = colorTupleToBase10(dataColor)
+			data = colorTupleToBase7(dataColor)
 			print(chr(data))
 			f.append(str(chr(data)))
 			valIndex += 1
@@ -131,7 +160,7 @@ for n in range(len(pixList)):
 	except:
 		outString = ''.join(f)
 		file.write(outString)
-		file.write(" TOTAL CHARS READ: " + str(valIndex))
+		file.write("ERROR! TOTAL CHARS READ: " + str(valIndex))
 		exit()
 	xC += 1
 	if(xC > (xSize - 1)):
