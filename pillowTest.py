@@ -92,7 +92,8 @@ def normalizeBrightness(mainColor, c1, c2):
 	cl2 = list(c2)
 	adj = addLists(cl1, cl2)
 	for i in range(len(adj)):
-		adj[i] = int(adj[i]/3)
+		adj[i] = int(adj[i]/2) #get the average of the two lists
+		adj[i] = int(adj[i]*(2/3)) #reduce the value to make room for the byte
 	l = addLists(list(mainColor), adj)
 	return tuple(l)
 ##Gets a GCD from a color tuple
@@ -141,6 +142,15 @@ def convertToBase255(number):
 	return (number, pow2, pow3)
 def convertFromBase255(threeTuple):
 	return threeTuple[0] + (threeTuple[1]*255) + (threeTuple[2]*255*255)
+def makeSpecificGrey(value):
+	list = [0, 0, 0]
+	ind = 0
+	while(sumList(list) < value):
+		list[ind] += 1
+		ind += 1
+		if(ind > 2):
+			ind = 0
+	return tuple(list)
 ##END DEFS
 
 #Getting some basic info
@@ -168,7 +178,7 @@ copyImage = Image.new('RGB', myImage.size)
 newPixList = []
 xC, yC = 0, 0
 dataPixList = []
-for n in range(len(pixList)):
+for n in range(1, len(pixList)):
 	x, y, z, a = pixList[n] #Needs RGBA for PNG
 	if((n + 1) % (pixelSpace + pixelShift) == 0):
 		#Write the data to a pixel
@@ -177,6 +187,7 @@ for n in range(len(pixList)):
 			print("Original RGB values " + str((x, y, z)))
 			#print(getRatio((x, y, z)))
 			newColor = adjustColorSum(intFiList[valIndex],(x, y, z))
+			#newColor = makeSpecificGrey(intFiList[valIndex])
 			print("Adjusted RGB values " + str(newColor))
 			neighbor1, neighbor2 = pixList[n - 1], pixList[n + 1]
 			newColorAdj = normalizeBrightness(newColor, neighbor1, neighbor2)
