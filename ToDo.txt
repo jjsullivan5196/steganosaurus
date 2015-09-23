@@ -1,0 +1,4 @@
+- Use first 2 pixels to store a base-10 6 digit int for file size
+- - use 3rd pixel color as dummy
+
+- Change data to base-7
