@@ -1,6 +1,8 @@
 from PIL import Image
 from fractions import gcd
 import os, sys, math
+
+
 ##DEFS
 #Gets the ratio of the values in a tuple
 #Returns a tuple of the same size with the ratios
@@ -95,6 +97,15 @@ def normalizeBrightness(mainColor, c1, c2):
 		adj[i] = int(adj[i]/3)
 	l = addLists(list(mainColor), adj)
 	return tuple(l)
+def getUnnormalizedColor(nc, c1, c2):
+	l = []
+	cl1 = list(c1)
+	cl2 = list(c2)
+	adj = addLists(cl1, cl2)
+	for i in range(len(adj)):
+		adj[i] = int(adj[i]/3)
+	l = subLists(nc, adj)
+	return tuple(l)
 ##Gets a GCD from a color tuple
 ##probably a bit slow but required
 ##Also adjusts any odd number so it becomes even
@@ -102,6 +113,11 @@ def addLists(l1, l2):
 	l = []
 	for i in range(len(l1)):
 		l.append(l1[i] + l2[i])
+	return l
+def subLists(l1, l2):
+	l = []
+	for i in range(len(l1)):
+		l.append(l1[i] - l2[i])
 	return l
 def gcd(threeTuple):
 	threeTuple = (makeEven(threeTuple[0]), makeEven(threeTuple[1]), makeEven(threeTuple[2]))
@@ -143,66 +159,43 @@ def convertFromBase255(threeTuple):
 	return threeTuple[0] + (threeTuple[1]*255) + (threeTuple[2]*255*255)
 ##END DEFS
 
-#Getting some basic info
-myImage = Image.open("testImage.png")
+
+myImage = Image.open("out.png")
 xSize, ySize = myImage.size
 print("Width: " + str(xSize) + " Height: " + str(ySize) + " Total Pixel Number: " + str(xSize * ySize))
 
-file = open("hello.txt", 'r')
-fiList = list(file.readline())
-intFiList = []
-for e in fiList:
-	intFiList.append(ord(e))
-print(intFiList)
+f = []
+file = open("hidden.txt", 'w')
 #Determining info for pixel selection
 maxBytes = xSize * ySize / 3
-byteNum = len(intFiList) #Change this to see byte dist
-if (byteNum > maxBytes):
-	exit()
+pixList = myImage.getdata()
+byteNum = convertFromBase255(pixList[0])
+print("Total Number of bytes to receive: " + str(byteNum))
 pixelSpace = int(xSize * ySize / byteNum)
 pixelShift = 0
-pixList = myImage.getdata()
 valIndex = 0
 
-copyImage = Image.new('RGB', myImage.size)
-newPixList = []
-xC, yC = 0, 0
-dataPixList = []
+#For now let's just get the data out
 for n in range(len(pixList)):
-	x, y, z, a = pixList[n] #Needs RGBA for PNG
+	x, y, z = pixList[n] #Needs RGBA for PNG
+	print(valIndex)
+	if(valIndex >= byteNum):
+		print("All bytes retrieved")
+		break
 	if((n + 1) % (pixelSpace + pixelShift) == 0):
 		#Write the data to a pixel
-		if(valIndex < len(intFiList)):
-			print(str(xC) + " " + str(yC))
-			print("Original RGB values " + str((x, y, z)))
-			#print(getRatio((x, y, z)))
-			newColor = adjustColorSum(intFiList[valIndex],(x, y, z))
-			print("Adjusted RGB values " + str(newColor))
-			neighbor1, neighbor2 = pixList[n - 1], pixList[n + 1]
-			newColorAdj = normalizeBrightness(newColor, neighbor1, neighbor2)
-			newPixList.append(newColorAdj)
-			print("Normalized RGB values " + str(newColorAdj))
-			print(sumTup(newColor))
-			print(chr(intFiList[valIndex]))
-			valIndex += 1
-			pixelShift = getNewShift(pixelShift)
-			#Not strictly necessary
-			if not (xC, yC) in dataPixList:
-				dataPixList.append((xC, yC))
-			else:
-				print("Pixel Value Repeated")
-				exit()
-		else:
-			newPixList.append((x, y, z))
+		print("RGB Values " + str((x, y, z)))
+		neighbor1, neighbor2 = pixList[n - 1], pixList[n + 1]
+		dataColor = getUnnormalizedColor((x, y, z), neighbor1, neighbor2)
+		print("Data RGB values " + str(dataColor))
+		print(sumTup(dataColor))
+		colorChar = chr(sumTup(dataColor))
+		print(colorChar)
+		f.append(colorChar)
+		pixelShift = getNewShift(pixelShift)
+		valIndex += 1
 		#######################
 	else:
-		if(xC == 0 and yC == 0):
-			newPixList.append(convertToBase255(byteNum))
-		else:
-			newPixList.append((x, y, z))
-	xC += 1
-	if(xC > (xSize - 1)):
-		xC = 0
-		yC += 1
-copyImage.putdata(newPixList)
-copyImage.save("out.png")
+		pass
+outString = ''.join(f)
+file.write(outString)
