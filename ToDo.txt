@@ -4,4 +4,6 @@
 - Change data to base-7
 
 -Detect if a pixel is simply too dark, and do something about it
+
+- Use Bytes streams because you're a cool kid and not a lame angus
 --------------------ABOVE THIS LINE IS DONE-----------------------------------------

@@ -1,7 +1,7 @@
 from PIL import Image
 from fractions import gcd
 from crazyFunctions import *
-import os, sys, math
+import os, sys, math, io
 ##DEFS
 #Returns the sum of a tuple
 #Getting some basic info
@@ -13,7 +13,7 @@ xSize, ySize = myImage.size
 print("Width: " + str(xSize) + " Height: " + str(ySize) + " Total Pixel Number: " + str(xSize * ySize))
 
 f = []
-file = open(str(args[2]), 'w')
+file = io.open(str(args[2]), 'wb')
 #Determining info for pixel selection
 maxBytes = xSize * ySize / 3
 pixList = myImage.getdata()
@@ -59,21 +59,22 @@ for n in range(3, len(pixList)):
 				dataColor = subColor
 			print("Data Color: " + str(dataColor))
 			data = colorTupleToBase7(dataColor)
-			print(chr(data))
-			f.append(str(chr(data)))
+			#print(chr(data))
+			f.append(data)#str(chr(data)))
 			valIndex += 1
 			pixelShift = getNewShift(pixelShift)
 			#######################
 		else:
 			pass
 	except:
-		outString = ''.join(f)
-		file.write(outString)
+		#outString = ''.join(f)
+		#file.write(outString)
+		file.write(bytearray(f))
 		file.write("ERROR! TOTAL CHARS READ: " + str(valIndex))
 		exit()
 	xC += 1
 	if(xC > (xSize - 1)):
 		xC = 0
 		yC += 1
-outString = ''.join(f)
-file.write(outString)
+#outString = ''.join(f)
+file.write(bytearray(f))#outString)

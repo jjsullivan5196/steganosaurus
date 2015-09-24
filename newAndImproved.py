@@ -1,7 +1,7 @@
 from PIL import Image
 from fractions import gcd
 from crazyFunctions import *
-import os, sys, math
+import os, sys, math, io
 ##DEFS
 #Returns the sum of a tuple
 ##END DEFS
@@ -15,11 +15,13 @@ xSize, ySize = myImage.size
 print("Width: " + str(xSize) + " Height: " + str(ySize) + " Total Pixel Number: " + str(xSize * ySize))
 
 #file = open("hello.txt", 'r')
-file = open(str(args[2]), 'r')
-fiList = list(file.readline())
+file = io.open(str(args[2]), 'rb')
+intFiList = list(file.read())
+'''
 intFiList = []
 for e in fiList:
 	intFiList.append(ord(e))
+'''
 #print(intFiList)
 #Determining info for pixel selection
 maxBytes = xSize * ySize / 3
