@@ -5,7 +5,12 @@ def matchesPattern(n):
 	if((n+1)%3==0):
 		return True
 	return False
-
+def getMaxBytesGivenPattern(size, headerSize, pattern):
+	s = 0
+	for x in range(headerSize, size):
+		if(pattern(x)):
+			s += 1
+	return s
 def sumTup(tup):
 	total = 0
 	for e in tup:
