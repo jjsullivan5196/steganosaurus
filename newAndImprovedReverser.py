@@ -1,94 +1,9 @@
 from PIL import Image
 from fractions import gcd
+from crazyFunctions import *
 import os, sys, math
 ##DEFS
 #Returns the sum of a tuple
-def sumTup(tup):
-	total = 0
-	for e in tup:
-		total += e
-	return total
-#Returns the sum of a list
-def sumList(list):
-	total = 0
-	for e in list:
-		total += e
-	return total
-def avgTup(tup):
-	total = 0
-	for e in tup:
-		total += e
-	return total/len(tup)
-def getNewShift(oldShift):
-	#This is gonna have magic prime numbers
-	ret = oldShift + 43 #Oh jeez look at all the magic
-	if(ret > 100):
-		ret -= 200
-	return ret
-def addLists(l1, l2):
-	l = []
-	for i in range(len(l1)):
-		l.append(l1[i] + l2[i])
-	return l
-##Color operations
-##Used for easy color changing
-def averageColor(c1, c2):
-	R = int((c1[0] + c2[0])/2)
-	G = int((c1[1] + c2[1])/2)
-	B = int((c1[2] + c2[2])/2)
-	return (R, G, B)
-def subtractColor(base, sub):
-	R = (base[0] - sub[0])
-	G = (base[1] - sub[1])
-	B = (base[2] - sub[2])
-	return (R, G, B)
-def addColor(c1, c2):
-	R = (c1[0] + c2[0])
-	G = (c1[1] + c2[1])
-	B = (c1[2] + c2[2])
-	return (R, G, B)
-#For the super-simple message length recording
-#For NEW AND IMPROVED data hiding
-def base10ToColorTuple(num):
-	color = [0, 0, 0]
-	
-	hundreds = (num - (num%100))/100
-	color[2] = int(hundreds)
-	num -= hundreds * 100
-	
-	tens = (num - (num%10))/10
-	color[1] = int(tens)
-	num -= tens * 10
-	
-	color[0] = int(num)
-	
-	return tuple(color)
-def colorTupleToBase10(colorTuple):
-	return (colorTuple[0] + (colorTuple[1] * 10) + (colorTuple[2] * 100))
-	
-def base7ToColorTuple(num):
-	color = [0, 0, 0]
-	
-	hundreds = (num - (num%49))/49
-	color[2] = int(hundreds)
-	num -= hundreds * 49
-	
-	tens = (num - (num%7))/7
-	color[1] = int(tens)
-	num -= tens * 7
-	
-	color[0] = int(num)
-	
-	return tuple(color)
-def colorTupleToBase7(colorTuple):
-	return (colorTuple[0] + (colorTuple[1] * 7) + (colorTuple[2] * 49))
-def colorGreaterThan(color, comparison):
-	for x in range(len(color)):
-		if(color[x] < comparison[x]):
-			return False
-	return True
-##END DEFS
-
 #Getting some basic info
 args = sys.argv
 myImage = Image.open(args[1])
@@ -127,7 +42,7 @@ for n in range(3, len(pixList)):
 		if(valIndex >= byteNum):
 			print("All bytes retrieved")
 			break
-		if((n+1)%3 == 0):#(n + 1) % (pixelSpace + pixelShift) == 0):
+		if(matchesPattern(n)):#(n+1)%3 == 0):#(n + 1) % (pixelSpace + pixelShift) == 0):
 			#Write the data to a pixel
 			print(str(xC) + " " + str(yC))
 			print("RGB values " + str((x, y, z)))
