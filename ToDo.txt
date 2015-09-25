@@ -6,4 +6,8 @@
 -Detect if a pixel is simply too dark, and do something about it
 
 - Use Bytes streams because you're a cool kid and not a lame angus
+
+- Implement pattern space checker
 --------------------ABOVE THIS LINE IS DONE-----------------------------------------
+
+- Add a file for patterns

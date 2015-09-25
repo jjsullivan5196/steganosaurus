@@ -2,41 +2,44 @@ from PIL import Image
 from fractions import gcd
 from crazyFunctions import *
 import os, sys, math, io
-##DEFS
-#Returns the sum of a tuple
-##END DEFS
+
 args = sys.argv
 
-#Getting some basic info
+##########################
+##Opening the image file##
+##########################
 myImage = Image.open(str(args[1]))
-#myImage = Image.open("pleasekillme.png")
 myImage = myImage.convert("RGB")
 xSize, ySize = myImage.size
-print("Width: " + str(xSize) + " Height: " + str(ySize) + " Total Pixel Number: " + str(xSize * ySize))
+print("Image Dimensions:\n    Width: " + str(xSize) + " Height: " + str(ySize))
 
-#file = open("hello.txt", 'r')
+#############################
+##Opening the injectee file##
+#############################
 file = io.open(str(args[2]), 'rb')
 intFiList = list(file.read())
-'''
-intFiList = []
-for e in fiList:
-	intFiList.append(ord(e))
-'''
-#print(intFiList)
-#Determining info for pixel selection
-maxBytes = xSize * ySize / 3
-byteNum = len(intFiList) #Change this to see byte dist
-if (byteNum > maxBytes):
-	exit()
-pixelSpace = int(xSize * ySize / byteNum)
-pixelShift = 0
 pixList = myImage.getdata()
+
+###################################
+##Determine injectability of file##
+###################################
+maxBytes = getMaxBytesGivenPattern(xSize * ySize, 3, matchesPattern)
+print(str(maxBytes) + "/" + str(xSize * ySize) + " bytes available for writing.")
+byteNum = len(intFiList)
+if (byteNum > maxBytes):
+	print(str(byteNum) + " exceeds max bytes available for writing.")
+	exit()
+print(str(byteNum) + "/" + str(maxBytes) + " bytes to be used.")
 valIndex = 0
 
+####################################
+##Set up the injecting environment##
+####################################
 copyImage = Image.new('RGB', myImage.size)
 newPixList = []
 xC, yC = 3, 0
 dataPixList = []
+
 #############################
 ##Put in the file size data##
 #############################
@@ -50,6 +53,12 @@ newPixList[0] = subtractColor(newPixList[0], (9, 9, 9))
 newPixList[1] = subtractColor(newPixList[1], (9, 9, 9))
 newPixList[0] = addColor(newPixList[0], col1)
 newPixList[1] = addColor(newPixList[1], col2)
+
+######################################
+##Display final prompt before action##
+######################################
+input("Press Enter to continue...")
+
 ##########################
 ##Add File Data to Image##
 ##########################
@@ -73,7 +82,6 @@ for n in range(3, len(pixList)):
 			print(dataColor)
 			newPixList.append(dataColor)
 			valIndex += 1
-			pixelShift = getNewShift(pixelShift)
 			#Not strictly necessary
 			if not (xC, yC) in dataPixList:
 				dataPixList.append((xC, yC))
@@ -91,10 +99,3 @@ for n in range(3, len(pixList)):
 		yC += 1
 copyImage.putdata(newPixList)
 copyImage.save(str(args[3]))
-print("Base Color " + str(pixList[2]))
-print(byteNum)
-print(col1)
-print(newPixList[0])
-print(col2)
-print(newPixList[1])
-input("Press Enter to continue...")

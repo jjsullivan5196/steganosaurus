@@ -1,14 +1,14 @@
-def matchesPattern(n):
+def matchesPattern(n, extraArgs=None):
 	#Simple bool for matching pixels
 	#Literally allows for any complexity of function to be externalized here
 	#Returns True if pixel is to be written to, false if it isn't
 	if((n+1)%3==0):
 		return True
 	return False
-def getMaxBytesGivenPattern(size, headerSize, pattern):
+def getMaxBytesGivenPattern(size, headerSize, pattern, extraArgs = None):
 	s = 0
 	for x in range(headerSize, size):
-		if(pattern(x)):
+		if(pattern(x, extraArgs)):
 			s += 1
 	return s
 def sumTup(tup):
