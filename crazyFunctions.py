@@ -14,6 +14,59 @@ def getMaxBytesGivenPattern(size, headerSize, pattern, extraArgs = None):
 ##########################################
 ##SPECIAL CASE DATA INJECTION OPERATIONS##
 ##########################################
+###HEADER###
+def headerColorIsSpecial(headerColor):
+	#Checks if data will fit into each channel of headerColor
+	R, G, B = headerColor
+	R += 9
+	G += 9
+	B += 9
+	if(R > 255 or G > 255 or B > 255):
+		return True
+	return False
+def specialCaseHeaderColor(baseColor, dataColor):
+	R, G, B = baseColor
+	x, y, z = dataColor
+	##Red Channel
+	if(R < 9):
+		R += x
+	else:
+		R -= 9
+		R += x
+	##Green Channel
+	if(G < 9):
+		G += y
+	else:
+		G -= 9
+		G += y
+	##Blue Channel
+	if(B < 9):
+		B += z
+	else:
+		B -= 9
+		B += z
+	return tuple([R, G, B]) #Just making sure
+def dataFromSpecialHeader(headerColor, baseColor):
+	R, G, B = headerColor
+	x, y, z = baseColor
+	i, j, k = 0, 0, 0 #Data
+	#Red Channel
+	if(x < 9):
+		i = R - x
+	else:
+		i = R + 9 - x
+	#Green Channel
+	if(y < 9):
+		j = G - y
+	else:
+		j = G + 9 - y
+	#Blue Channel
+	if(z < 9):
+		k = B - z
+	else:
+		k = B + 9 - z
+	return tuple([i, j, k])
+###DATA###
 def baseColorIsSpecial(baseColor):
 	#Checks if data will fit into each channel of baseColor
 	R, G, B = baseColor
@@ -50,17 +103,17 @@ def dataFromSpecialCase(finalColor, baseColor):
 	x, y, z = baseColor
 	i, j, k = 0, 0, 0 #Data
 	#Red Channel
-	if(R <= 7):
+	if(x < 7):
 		i = R - x
 	else:
 		i = R + 7 - x
 	#Green Channel
-	if(G <= 7):
+	if(y < 7):
 		j = G - y
 	else:
 		j = G + 7 - y
 	#Blue Channel
-	if(B <= 7):
+	if(z < 5):
 		k = B - z
 	else:
 		k = B + 5 - z

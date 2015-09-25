@@ -23,11 +23,20 @@ valIndex = 0
 #####################
 col1 = pixList[0]
 col2 = pixList[1]
-col1 = addColor(col1, (9, 9, 9))
-col2 = addColor(col2, (9, 9, 9))
-col1 = subtractColor(col1, pixList[2])
-col2 = subtractColor(col2, pixList[2])
-byteNum = (colorTupleToBase10(col2) * 1000) + colorTupleToBase10(col1)
+col3 = pixList[2]
+if(colorGreaterThan(pixList[3], (9, 9, 9))):
+	col1 = addColor(col1, (9, 9, 9))
+	col2 = addColor(col2, (9, 9, 9))
+	col3 = addColor(col3, (9, 9, 9))
+if(headerColorIsSpecial(pixList[3])):
+	col1 = dataFromSpecialHeader(col1, pixList[3])
+	col2 = dataFromSpecialHeader(col2, pixList[3])
+	col3 = dataFromSpecialHeader(col3, pixList[3])
+else:
+	col1 = subtractColor(col1, pixList[3])
+	col2 = subtractColor(col2, pixList[3])
+	col3 = subtractColor(col3, pixList[3])
+byteNum = (colorTupleToBase10(col3) * 1000000) + (colorTupleToBase10(col2) * 1000) + colorTupleToBase10(col1)
 print("Total Number of bytes to receive: " + str(byteNum))
 
 ######################################
@@ -36,7 +45,7 @@ print("Total Number of bytes to receive: " + str(byteNum))
 input("Press Enter to continue")
 
 #xC, yC = 0, 0
-for n in range(3, len(pixList)):
+for n in range(4, len(pixList)):
 	try:
 		x, y, z = pixList[n]
 		if(valIndex >= byteNum):
@@ -64,7 +73,7 @@ for n in range(3, len(pixList)):
 	except:
 		print("\nERROR: Could not retrieve bytes.")
 		print(str(valIndex) + "/" + str(byteNum) + " bytes retrieved.")
-		file.write(bytearray(f))
+		#file.write(bytearray(f))
 		exit()
 #Split the array into filename and data components
 nameLength = (f[0] + 1)

@@ -46,16 +46,29 @@ newPixList = []
 #############################
 ##Put in the file size data##
 #############################
-col1 = base10ToColorTuple(byteNum%1000) #First 3 digits
-col2 = base10ToColorTuple((byteNum - (byteNum%1000))/1000) #Last 3 digits
-##Replace the first 2 pixels with the third
-newPixList.append(pixList[2])
-newPixList.append(pixList[2])
-newPixList.append(pixList[2])
-newPixList[0] = subtractColor(newPixList[0], (9, 9, 9))
-newPixList[1] = subtractColor(newPixList[1], (9, 9, 9))
-newPixList[0] = addColor(newPixList[0], col1)
-newPixList[1] = addColor(newPixList[1], col2)
+ones = byteNum%1000
+millions = (byteNum - (byteNum%1000000))/1000000
+thousands = (byteNum - (byteNum%1000) - (millions * 1000000))/1000
+col1 = base10ToColorTuple(ones) #First 3 digits
+col2 = base10ToColorTuple(thousands) #middle 3 digits
+col3 = base10ToColorTuple(millions) #last 3 digits
+##Replace the first 3 pixels with the fourth
+newPixList.append(pixList[3])
+newPixList.append(pixList[3])
+newPixList.append(pixList[3])
+newPixList.append(pixList[3])
+if(colorGreaterThan(pixList[3], (9, 9, 9))):
+	newPixList[0] = subtractColor(newPixList[0], (9, 9, 9))
+	newPixList[1] = subtractColor(newPixList[1], (9, 9, 9))
+	newPixList[2] = subtractColor(newPixList[2], (9, 9, 9))
+if(headerColorIsSpecial(newPixList[3])):
+	newPixList[0] = specialCaseHeaderColor(newPixList[0], col1)
+	newPixList[1] = specialCaseHeaderColor(newPixList[1], col2)
+	newPixList[2] = specialCaseHeaderColor(newPixList[2], col3)
+else:
+	newPixList[0] = addColor(newPixList[0], col1)
+	newPixList[1] = addColor(newPixList[1], col2)
+	newPixList[2] = addColor(newPixList[2], col3)
 
 ######################################
 ##Display final prompt before action##
@@ -65,7 +78,7 @@ input("Press Enter to continue...")
 ##########################
 ##Add File Data to Image##
 ##########################
-for n in range(3, len(pixList)):
+for n in range(4, len(pixList)):
 	x, y, z = pixList[n]
 	if(matchesPattern(n)):#(n + 1)%3==0):#(n + 1) % (pixelSpace + pixelShift) == 0):
 		#Write the data to a pixel
