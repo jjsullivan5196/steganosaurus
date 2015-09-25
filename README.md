@@ -13,7 +13,7 @@ To install Pillow, simply install the package with pip:
 pip install Pillow
 ```
 
-Pip will fetch the package and compile/install for you
+Pip will fetch the package and compile/install for you.
 
 ##Windows:
 
