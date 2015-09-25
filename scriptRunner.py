@@ -1,5 +1,5 @@
 import os
-mode = str(input("Inject/Retrieve or Check? (i/r/c)"))
+mode = str(input("Inject/Retrieve or Check? (i/r/c): "))
 if(mode == "i"):
 	image = str(input("Enter name of image file: "))
 	file = str(input("Enter name of file to inject: "))
@@ -7,7 +7,10 @@ if(mode == "i"):
 	os.system("newAndImproved.py " + image + " " + file + " " + outImage)
 elif(mode == "r"):
 	image = str(input("Enter name of image file: "))
-	outFile = str(input("Enter name of output file: "))
+	if(str(input("Override filename? (y/N): ")) == "y"):
+		outFile = str(input("Enter name of output file: "))
+	else:
+		outFile = ""
 	os.system("newAndImprovedReverser.py " + image + " " + outFile)
 elif(mode == "c"):
 	image = str(input("Enter name of image file: "))

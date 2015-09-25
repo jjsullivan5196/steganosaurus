@@ -8,6 +8,14 @@
 - Use Bytes streams because you're a cool kid and not a lame angus
 
 - Implement pattern space checker
+
+- injected file now has a default name (its original filename!!!!)
+
+- Fix dem bugs (special cases)
+
+- Add an image checker
 --------------------ABOVE THIS LINE IS DONE-----------------------------------------
 
 - Add a file for patterns
+
+- Make checker get name of injected file

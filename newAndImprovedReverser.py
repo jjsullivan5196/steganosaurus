@@ -15,7 +15,6 @@ print("Image Dimensions:\n    Width: " + str(xSize) + " Height: " + str(ySize))
 ##Opening the output file##
 ###########################
 f = []
-file = io.open(str(args[2]), 'wb')
 pixList = myImage.getdata()
 valIndex = 0
 
@@ -45,12 +44,16 @@ for n in range(3, len(pixList)):
 			break
 		if(matchesPattern(n)):
 			#Extract data from a pixel
-			avgColor = averageColor(pixList[n - 1], pixList[n + 1])
-			subColor = subtractColor((x, y, z), avgColor)
-			if(colorGreaterThan(avgColor, (7, 7, 5))):
+			baseColor = averageColor(pixList[n - 1], pixList[n + 1])
+			subColor = subtractColor((x, y, z), baseColor)
+			if(colorGreaterThan(baseColor, (7, 7, 5))):
 				dataColor = addColor(subColor, (7, 7, 5))
 			else:
-				dataColor = subColor
+				#Reverses special cases
+				if(baseColorIsSpecial(baseColor)):
+					dataColor = dataFromSpecialCase((x, y, z), baseColor)
+				else:
+					dataColor = subColor
 			data = colorTupleToBase7(dataColor)
 			f.append(data)
 			valIndex += 1
@@ -63,10 +66,16 @@ for n in range(3, len(pixList)):
 		print(str(valIndex) + "/" + str(byteNum) + " bytes retrieved.")
 		file.write(bytearray(f))
 		exit()
-	'''
-	xC += 1
-	if(xC > (xSize - 1)):
-		xC = 0
-		yC += 1
-	'''
+#Split the array into filename and data components
+nameLength = (f[0] + 1)
+rawName = f[1:nameLength]
+f = f[nameLength:]
+#Logic for overriding filename if applicable
+try:
+	file = io.open(str(args[2]), 'wb')
+except:
+	fileName = ""
+	for x in range(len(rawName)):
+		fileName += str(chr(rawName[x]))
+	file = io.open(fileName, 'wb')
 file.write(bytearray(f))

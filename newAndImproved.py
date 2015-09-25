@@ -17,7 +17,12 @@ print("Image Dimensions:\n    Width: " + str(xSize) + " Height: " + str(ySize))
 ##Opening the injectee file##
 #############################
 file = io.open(str(args[2]), 'rb')
-intFiList = list(file.read())
+intFiList = []
+intFiList.append(len(args[2]))
+for c in str(args[2]):
+	intFiList.append(ord(c))
+intFiList.extend(list(file.read()))
+#intFiList = list(file.read())
 pixList = myImage.getdata()
 
 ###################################
@@ -70,8 +75,13 @@ for n in range(3, len(pixList)):
 				baseColor = subtractColor(neighborAverage, (7, 7, 5))
 			else:
 				baseColor = neighborAverage
-			dataColor = addColor(baseColor, base7ToColorTuple(intFiList[valIndex]))
-			newPixList.append(dataColor)
+			dataColor = base7ToColorTuple(intFiList[valIndex])
+			#Handles very special cases
+			if(baseColorIsSpecial(baseColor)):
+				finalColor = specialCaseFinalColor(baseColor, dataColor)
+			else:
+				finalColor = addColor(baseColor, dataColor)
+			newPixList.append(finalColor)
 			valIndex += 1
 			sys.stdout.write("\r" + str(int((valIndex/byteNum) * 100)) + "% Complete")
 			sys.stdout.flush()
@@ -79,5 +89,6 @@ for n in range(3, len(pixList)):
 			newPixList.append((x, y, z))
 	else:
 		newPixList.append((x, y, z))
+print("!") #To satisfy my autism
 copyImage.putdata(newPixList)
 copyImage.save(str(args[3]))

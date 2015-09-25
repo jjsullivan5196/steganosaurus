@@ -11,6 +11,63 @@ def getMaxBytesGivenPattern(size, headerSize, pattern, extraArgs = None):
 		if(pattern(x, extraArgs)):
 			s += 1
 	return s
+##########################################
+##SPECIAL CASE DATA INJECTION OPERATIONS##
+##########################################
+def baseColorIsSpecial(baseColor):
+	#Checks if data will fit into each channel of baseColor
+	R, G, B = baseColor
+	R += 7
+	G += 7
+	B += 5
+	if(R > 255 or G > 255 or B > 255):
+		return True
+	return False
+def specialCaseFinalColor(baseColor, dataColor):
+	R, G, B = baseColor
+	x, y, z = dataColor
+	##Red Channel
+	if(R < 7):
+		R += x
+	else:
+		R -= 7
+		R += x
+	##Green Channel
+	if(G < 7):
+		G += y
+	else:
+		G -= 7
+		G += y
+	##Blue Channel
+	if(B < 5):
+		B += z
+	else:
+		B -= 5
+		B += z
+	return tuple([R, G, B]) #Just making sure
+def dataFromSpecialCase(finalColor, baseColor):
+	R, G, B = finalColor
+	x, y, z = baseColor
+	i, j, k = 0, 0, 0 #Data
+	#Red Channel
+	if(R <= 7):
+		i = R - x
+	else:
+		i = R + 7 - x
+	#Green Channel
+	if(G <= 7):
+		j = G - y
+	else:
+		j = G + 7 - y
+	#Blue Channel
+	if(B <= 7):
+		k = B - z
+	else:
+		k = B + 5 - z
+	return tuple([i, j, k])
+##############################################
+##END SPECIAL CASE DATA INJECTION OPERATIONS##
+##############################################
 def sumTup(tup):
 	total = 0
 	for e in tup:
