@@ -1,141 +1,90 @@
 from PIL import Image
 from fractions import gcd
-import os, sys, math
-##DEFS
-#Returns the sum of a tuple
-def sumTup(tup):
-	total = 0
-	for e in tup:
-		total += e
-	return total
-#Returns the sum of a list
-def sumList(list):
-	total = 0
-	for e in list:
-		total += e
-	return total
-def avgTup(tup):
-	total = 0
-	for e in tup:
-		total += e
-	return total/len(tup)
-def getNewShift(oldShift):
-	#This is gonna have magic prime numbers
-	ret = oldShift + 43 #Oh jeez look at all the magic
-	if(ret > 100):
-		ret -= 200
-	return ret
-def addLists(l1, l2):
-	l = []
-	for i in range(len(l1)):
-		l.append(l1[i] + l2[i])
-	return l
-##Color operations
-##Used for easy color changing
-def averageColor(c1, c2):
-	R = int((c1[0] + c2[0])/2)
-	G = int((c1[1] + c2[1])/2)
-	B = int((c1[2] + c2[2])/2)
-	return (R, G, B)
-def subtractColor(base, sub):
-	R = (base[0] - sub[0])
-	G = (base[1] - sub[1])
-	B = (base[2] - sub[2])
-	return (R, G, B)
-def addColor(c1, c2):
-	R = (c1[0] + c2[0])
-	G = (c1[1] + c2[1])
-	B = (c1[2] + c2[2])
-	return (R, G, B)
-#For the super-simple message length recording
-def convertToBase255(number):
-	pow2 = 0
-	while(number >= 255):
-		print(str(number) + " > 255")
-		number -= 255
-		pow2 += 1
-	if(pow2 >= 255):
-		while(pow2 >= 255):
-			pow2 -= 255
-			pow3 += 1
-	else:
-		pow3 = 0
-	#(ones, 255s, 255^2s)
-	return (number, pow2, pow3)
-def convertFromBase255(threeTuple):
-	return threeTuple[0] + (threeTuple[1]*255) + (threeTuple[2]*255*255)
-#For NEW AND IMPROVED data hiding
-def base10ToColorTuple(num):
-	color = [0, 0, 0]
-	
-	hundreds = (num - (num%100))/100
-	color[2] = int(hundreds)
-	num -= hundreds * 100
-	
-	tens = (num - (num%10))/10
-	color[1] = int(tens)
-	num -= tens * 10
-	
-	color[0] = int(num)
-	
-	return tuple(color)
-def colorTupleToBase10(colorTuple):
-	return (colorTuple[0] + (colorTuple[1] * 10) + (colorTuple[2] * 100))
-##END DEFS
+from crazyFunctions import *
+import os, sys, math, io
 
-#Getting some basic info
-myImage = Image.open("out.png")
-#myImage = myImage.convert("RGB")
+args = sys.argv
+##########################
+##Opening the image file##
+##########################
+myImage = Image.open(args[1])
 xSize, ySize = myImage.size
-print("Width: " + str(xSize) + " Height: " + str(ySize) + " Total Pixel Number: " + str(xSize * ySize))
+print("Image Dimensions:\n    Width: " + str(xSize) + " Height: " + str(ySize))
 
+###########################
+##Opening the output file##
+###########################
 f = []
-file = open("hidden.txt", 'w')
-#Determining info for pixel selection
-maxBytes = xSize * ySize / 3
 pixList = myImage.getdata()
-byteNum = convertFromBase255(pixList[0])
-print("Total Number of bytes to receive: " + str(byteNum))
-pixelSpace = int(xSize * ySize / byteNum)
-pixelShift = 0
 valIndex = 0
 
-xC, yC = 0, 0
-for n in range(len(pixList)):
+#####################
+##Get The file size##
+#####################
+col1 = pixList[0]
+col2 = pixList[1]
+col3 = pixList[2]
+if(colorGreaterThan(pixList[3], (9, 9, 9))):
+	col1 = addColor(col1, (9, 9, 9))
+	col2 = addColor(col2, (9, 9, 9))
+	col3 = addColor(col3, (9, 9, 9))
+if(headerColorIsSpecial(pixList[3])):
+	col1 = dataFromSpecialHeader(col1, pixList[3])
+	col2 = dataFromSpecialHeader(col2, pixList[3])
+	col3 = dataFromSpecialHeader(col3, pixList[3])
+else:
+	col1 = subtractColor(col1, pixList[3])
+	col2 = subtractColor(col2, pixList[3])
+	col3 = subtractColor(col3, pixList[3])
+byteNum = (colorTupleToBase10(col3) * 1000000) + (colorTupleToBase10(col2) * 1000) + colorTupleToBase10(col1)
+print("Total Number of bytes to receive: " + str(byteNum))
+
+######################################
+##Display final prompt before action##
+######################################
+input("Press Enter to continue")
+
+#xC, yC = 0, 0
+for n in range(4, len(pixList)):
 	try:
 		x, y, z = pixList[n]
 		if(valIndex >= byteNum):
-			print("All bytes retrieved")
+			print("\n" + str(byteNum) + " bytes retrieved.")
 			break
-		if((n+1)%3 == 0):#(n + 1) % (pixelSpace + pixelShift) == 0):
-			#Write the data to a pixel
-			print(str(xC) + " " + str(yC))
-			print("RGB values " + str((x, y, z)))
-			neighbor1, neighbor2 = pixList[n - 1], pixList[n + 1]
-			print(str(neighbor1) + " " + str(neighbor2))
-			########################################
-			avgColor = averageColor(neighbor1, neighbor2)
-			print("Neighbor average color: " + str(avgColor))
-			subColor = subtractColor((x, y, z), avgColor)
-			print("Un-Offsetted Data Color: " + str(subColor))
-			dataColor = addColor(subColor, (9, 9, 2))
-			print("Data Color: " + str(dataColor))
-			data = colorTupleToBase10(dataColor)
-			print(chr(data))
-			f.append(str(chr(data)))
+		if(matchesPattern(n)):
+			#Extract data from a pixel
+			baseColor = averageColor(pixList[n - 1], pixList[n + 1])
+			subColor = subtractColor((x, y, z), baseColor)
+			if(colorGreaterThan(baseColor, (7, 7, 5))):
+				dataColor = addColor(subColor, (7, 7, 5))
+			else:
+				#Reverses special cases
+				if(baseColorIsSpecial(baseColor)):
+					dataColor = dataFromSpecialCase((x, y, z), baseColor)
+				else:
+					dataColor = subColor
+			data = colorTupleToBase7(dataColor)
+			f.append(data)
 			valIndex += 1
-			pixelShift = getNewShift(pixelShift)
-			#######################
+			sys.stdout.write("\r" + str(int((valIndex/byteNum) * 100)) + "% Complete")
+			sys.stdout.flush()
 		else:
 			pass
 	except:
-		outString = ''.join(f)
-		file.write(outString)
-		file.write(" TOTAL CHARS READ: " + str(valIndex))
+		print("\nERROR: Could not retrieve bytes.")
+		print(str(valIndex) + "/" + str(byteNum) + " bytes retrieved.")
+		#file.write(bytearray(f))
 		exit()
-	xC += 1
-	if(xC > (xSize - 1)):
-		xC = 0
-		yC += 1
-outString = ''.join(f)
-file.write(outString)
+#Split the array into filename and data components
+nameLength = (f[0] + 1)
+rawName = f[1:nameLength]
+f = f[nameLength:]
+#Logic for overriding filename if applicable
+try:
+	file = io.open(str(args[2]), 'wb')
+except:
+	fileName = ""
+	for x in range(len(rawName)):
+		fileName += str(chr(rawName[x]))
+	file = io.open(fileName, 'wb')
+file.write(bytearray(f))
