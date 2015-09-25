@@ -37,10 +37,6 @@ valIndex = 0
 ####################################
 copyImage = Image.new('RGB', myImage.size)
 newPixList = []
-'''
-xC, yC = 3, 0
-dataPixList = []
-'''
 
 #############################
 ##Put in the file size data##
@@ -79,24 +75,9 @@ for n in range(3, len(pixList)):
 			valIndex += 1
 			sys.stdout.write("\r" + str(int((valIndex/byteNum) * 100)) + "% Complete")
 			sys.stdout.flush()
-			'''
-			Commented out due to not really being needed
-			if not (xC, yC) in dataPixList:
-				dataPixList.append((xC, yC))
-			else:
-				print("Pixel Value Repeated")
-				exit()
-			'''
 		else:
 			newPixList.append((x, y, z))
 	else:
 		newPixList.append((x, y, z))
-	'''
-	Commented out due to not really being needed
-	xC += 1
-	if(xC > (xSize - 1)):
-		xC = 0
-		yC += 1
-	'''
 copyImage.putdata(newPixList)
 copyImage.save(str(args[3]))
