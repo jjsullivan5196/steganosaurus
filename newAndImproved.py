@@ -37,8 +37,10 @@ valIndex = 0
 ####################################
 copyImage = Image.new('RGB', myImage.size)
 newPixList = []
+'''
 xC, yC = 3, 0
 dataPixList = []
+'''
 
 #############################
 ##Put in the file size data##
@@ -67,35 +69,34 @@ for n in range(3, len(pixList)):
 	if(matchesPattern(n)):#(n + 1)%3==0):#(n + 1) % (pixelSpace + pixelShift) == 0):
 		#Write the data to a pixel
 		if(valIndex < len(intFiList)):
-			print(str(xC) + " " + str(yC))
-			print("Original RGB values " + str((x, y, z)))
-			neighbor1, neighbor2 = pixList[n - 1], pixList[n + 1]
-			print(str(neighbor1) + " " + str(neighbor2))
-			print("Average Neighbor Color: " + str(averageColor(neighbor1, neighbor2)))
-			##Make sure the color is bright enough, if not just throw the thing on top
-			if(colorGreaterThan(averageColor(neighbor1, neighbor2), (7, 7, 5))):
-				baseColor = subtractColor(averageColor(neighbor1, neighbor2), (7, 7, 5))
+			neighborAverage = averageColor(pixList[n - 1], pixList[n + 1])
+			if(colorGreaterThan(neighborAverage, (7, 7, 5))):
+				baseColor = subtractColor(neighborAverage, (7, 7, 5))
 			else:
-				baseColor = averageColor(neighbor1, neighbor2)
-			print("Data color to be added: " + str(base7ToColorTuple(intFiList[valIndex])))
+				baseColor = neighborAverage
 			dataColor = addColor(baseColor, base7ToColorTuple(intFiList[valIndex]))
-			print(dataColor)
 			newPixList.append(dataColor)
 			valIndex += 1
-			#Not strictly necessary
+			sys.stdout.write("\r" + str(int((valIndex/byteNum) * 100)) + "% Complete")
+			sys.stdout.flush()
+			'''
+			Commented out due to not really being needed
 			if not (xC, yC) in dataPixList:
 				dataPixList.append((xC, yC))
 			else:
 				print("Pixel Value Repeated")
 				exit()
+			'''
 		else:
 			newPixList.append((x, y, z))
-		#######################
 	else:
 		newPixList.append((x, y, z))
+	'''
+	Commented out due to not really being needed
 	xC += 1
 	if(xC > (xSize - 1)):
 		xC = 0
 		yC += 1
+	'''
 copyImage.putdata(newPixList)
 copyImage.save(str(args[3]))
