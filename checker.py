@@ -56,12 +56,15 @@ if(same and byteNum < 999999999):
 			print("\nERROR: Could not retrieve bytes.")
 			exit()
 	#Split off the non-filename component
-	rawName = f[1:f[0] + 1] #Oy Vey this is messy but it works
-	fileName = ""
-	for x in range(len(rawName)):
-		fileName += str(chr(rawName[x]))
-	print("Stored File Detected.")
-	print("    Stored File Size: " + str(byteNum) + " bytes")
-	print("    Stored File Name: " + fileName)
+	try:
+		rawName = f[1:f[0] + 1] #Oy Vey this is messy but it works
+		fileName = ""
+		for x in range(len(rawName)):
+			fileName += str(chr(rawName[x]))
+		print("Stored File Detected.")
+		print("    Stored File Size: " + str(byteNum) + " bytes")
+		print("    Stored File Name: " + fileName)
+	except:
+		print("No Stored File.")
 else:
 	print("No Stored File.")

@@ -58,7 +58,8 @@ rawName = f[1:nameLength]
 f = f[nameLength:]
 #Logic for overriding filename if applicable
 try:
-	file = io.open(str(args[2]), 'wb')
+	fileName = str(args[2])
+	file = io.open(fileName, 'wb')
 except:
 	fileName = ""
 	for x in range(len(rawName)):
@@ -66,5 +67,6 @@ except:
 	file = io.open(fileName, 'wb')
 try:
 	file.write(bytearray(f))
+	print("Bytes written to " + fileName)
 except:
 	print("Could not write bytes to file.")
