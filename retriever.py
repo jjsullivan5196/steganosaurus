@@ -1,5 +1,5 @@
 from PIL import Image
-from crazyFunctions import *
+from functions import *
 import sys, io
 
 args = sys.argv
