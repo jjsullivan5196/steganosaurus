@@ -1,7 +1,6 @@
 from PIL import Image
-from fractions import gcd
 from crazyFunctions import *
-import os, sys, math, io
+import sys, io
 
 args = sys.argv
 
@@ -22,7 +21,6 @@ intFiList.append(len(args[2]))
 for c in str(args[2]):
 	intFiList.append(ord(c))
 intFiList.extend(list(file.read()))
-#intFiList = list(file.read())
 pixList = myImage.getdata()
 
 ###################################
@@ -49,26 +47,14 @@ newPixList = []
 ones = byteNum%1000
 millions = (byteNum - (byteNum%1000000))/1000000
 thousands = (byteNum - (byteNum%1000) - (millions * 1000000))/1000
-col1 = base10ToColorTuple(ones) #First 3 digits
-col2 = base10ToColorTuple(thousands) #middle 3 digits
-col3 = base10ToColorTuple(millions) #last 3 digits
+col1 = colorTupleFromValue(ones, 10) #First 3 digits
+col2 = colorTupleFromValue(thousands, 10) #middle 3 digits
+col3 = colorTupleFromValue(millions, 10) #last 3 digits
 ##Replace the first 3 pixels with the fourth
+newPixList.append(injectDataColorBaseX(pixList[3], col1, 10))
+newPixList.append(injectDataColorBaseX(pixList[3], col2, 10))
+newPixList.append(injectDataColorBaseX(pixList[3], col3, 10))
 newPixList.append(pixList[3])
-newPixList.append(pixList[3])
-newPixList.append(pixList[3])
-newPixList.append(pixList[3])
-if(colorGreaterThan(pixList[3], (9, 9, 9))):
-	newPixList[0] = subtractColor(newPixList[0], (9, 9, 9))
-	newPixList[1] = subtractColor(newPixList[1], (9, 9, 9))
-	newPixList[2] = subtractColor(newPixList[2], (9, 9, 9))
-if(headerColorIsSpecial(newPixList[3])):
-	newPixList[0] = specialCaseHeaderColor(newPixList[0], col1)
-	newPixList[1] = specialCaseHeaderColor(newPixList[1], col2)
-	newPixList[2] = specialCaseHeaderColor(newPixList[2], col3)
-else:
-	newPixList[0] = addColor(newPixList[0], col1)
-	newPixList[1] = addColor(newPixList[1], col2)
-	newPixList[2] = addColor(newPixList[2], col3)
 
 ######################################
 ##Display final prompt before action##
@@ -80,20 +66,12 @@ input("Press Enter to continue...")
 ##########################
 for n in range(4, len(pixList)):
 	x, y, z = pixList[n]
-	if(matchesPattern(n)):#(n + 1)%3==0):#(n + 1) % (pixelSpace + pixelShift) == 0):
+	if(matchesPattern(n)):
 		#Write the data to a pixel
 		if(valIndex < len(intFiList)):
-			neighborAverage = averageColor(pixList[n - 1], pixList[n + 1])
-			if(colorGreaterThan(neighborAverage, (7, 7, 5))):
-				baseColor = subtractColor(neighborAverage, (7, 7, 5))
-			else:
-				baseColor = neighborAverage
-			dataColor = base7ToColorTuple(intFiList[valIndex])
-			#Handles very special cases
-			if(baseColorIsSpecial(baseColor)):
-				finalColor = specialCaseFinalColor(baseColor, dataColor)
-			else:
-				finalColor = addColor(baseColor, dataColor)
+			baseColor = averageColor(pixList[n - 1], pixList[n + 1])
+			dataColor = colorTupleFromValue(intFiList[valIndex], 7)
+			finalColor = injectDataColorBaseX(baseColor, dataColor, 7)
 			newPixList.append(finalColor)
 			valIndex += 1
 			sys.stdout.write("\r" + str(int((valIndex/byteNum) * 100)) + "% Complete")

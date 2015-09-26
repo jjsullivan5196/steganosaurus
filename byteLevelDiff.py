@@ -7,8 +7,12 @@ file2 = io.open(f2, 'rb')
 bytes1 = list(file1.read())
 bytes2 = list(file2.read())
 index = 0
+same = True
 for x, y in zip(bytes1, bytes2):
 	if(x != y):
 		print("Byte #" + str(index) + " is different")
 		print(str(x) + " vs " + str(y))
+		same = False
 	index += 1
+if(same):
+	print("Files are Identical")
