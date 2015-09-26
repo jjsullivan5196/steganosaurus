@@ -3,14 +3,13 @@ from functions import *
 import sys, io
 
 args = sys.argv
-
 ##########################
 ##Opening the image file##
 ##########################
 myImage = Image.open(str(args[1]))
 myImage = myImage.convert("RGB")
 xSize, ySize = myImage.size
-print("Image Dimensions:\n    Width: " + str(xSize) + " Height: " + str(ySize))
+#print("Image Dimensions:\n    Width: " + str(xSize) + " Height: " + str(ySize))
 
 #############################
 ##Opening the injectee file##
@@ -23,23 +22,13 @@ for c in str(args[2]):
 intFiList.extend(list(file.read()))
 pixList = myImage.getdata()
 
-###################################
-##Determine injectability of file##
-###################################
-maxBytes = getMaxBytesGivenPattern(xSize * ySize, 3, matchesPattern)
-print(str(maxBytes) + "/" + str(xSize * ySize) + " bytes available for writing.")
-byteNum = len(intFiList)
-if (byteNum > maxBytes):
-	print(str(byteNum) + " exceeds max bytes available for writing.")
-	exit()
-print(str(byteNum) + "/" + str(maxBytes) + " bytes to be used.")
-valIndex = 0
-
 ####################################
 ##Set up the injecting environment##
 ####################################
+byteNum = len(intFiList) ##This should probably be passed in
 copyImage = Image.new('RGB', myImage.size)
 newPixList = []
+valIndex = 0
 
 #############################
 ##Put in the file size data##

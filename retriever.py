@@ -8,7 +8,7 @@ args = sys.argv
 ##########################
 myImage = Image.open(args[1])
 xSize, ySize = myImage.size
-print("Image Dimensions:\n    Width: " + str(xSize) + " Height: " + str(ySize))
+#print("Image Dimensions:\n    Width: " + str(xSize) + " Height: " + str(ySize))
 
 ###########################
 ##Opening the output file##
@@ -24,7 +24,7 @@ col1 = retrieveDataColorBaseX(pixList[0], pixList[3], 10)
 col2 = retrieveDataColorBaseX(pixList[1], pixList[3], 10)
 col3 = retrieveDataColorBaseX(pixList[2], pixList[3], 10)
 byteNum = (colorTupleBaseXToVal(col3, 10) * 1000000) + (colorTupleBaseXToVal(col2, 10) * 1000) + colorTupleBaseXToVal(col1, 10)
-print("Total Number of bytes to receive: " + str(byteNum))
+#print("Total Number of bytes to receive: " + str(byteNum))
 
 ######################################
 ##Display final prompt before action##
@@ -52,19 +52,11 @@ for n in range(4, len(pixList)):
 		print("\nERROR: Could not retrieve bytes.")
 		print(str(valIndex) + "/" + str(byteNum) + " bytes retrieved before Error.")
 		exit()
-#Split the array into filename and data components
+#Cut the filename component off the data
 nameLength = (f[0] + 1)
-rawName = f[1:nameLength]
 f = f[nameLength:]
-#Logic for overriding filename if applicable
-try:
-	fileName = str(args[2])
-	file = io.open(fileName, 'wb')
-except:
-	fileName = ""
-	for x in range(len(rawName)):
-		fileName += str(chr(rawName[x]))
-	file = io.open(fileName, 'wb')
+fileName = str(args[2])
+file = io.open(fileName, 'wb')
 try:
 	file.write(bytearray(f))
 	print("Bytes written to " + fileName)
