@@ -8,7 +8,7 @@ args = sys.argv
 ##########################
 ##Opening the image file##
 ##########################
-myImage = Image.open(str(args[1]))
+myImage = Image.open(str(args[2]))
 myImage = myImage.convert("RGB")
 ##########################
 ##Determining Properties##
@@ -33,9 +33,9 @@ for x, y, z, q in zip(bcol1, bcol2, bcol3, pixList[3]):
 	same = False
 	if(x==y and x==z and x==q):
 		same = True
-#############################
-##Printing Stored File Info##
-#############################
+###################################
+##If there is a stored file logic##
+###################################
 if(same and byteNum < 999999999):
 	#Pasted from Retriever, repurposed for finding filename
 	f = []
@@ -64,7 +64,44 @@ if(same and byteNum < 999999999):
 		print("Stored File Detected.")
 		print("    Stored File Size: " + str(byteNum) + " bytes")
 		print("    Stored File Name: " + fileName)
+		if(args[1] == "inject"):
+			print("Cannot write over already injected file.")
+			os._exit(1) #Kill it DEAD
+		elif(args[1] == "retrieve"):
+			if(len(args) == 4):
+				print("File will be written to " + args[3])
+				os.system("retriever.py " + args[2] + " " + args[3])
+			else:
+				print("File will be written to " + fileName)
+				os.system("retriever.py " + args[2] + " \"" + fileName + "\"")
 	except:
 		print("No Stored File.")
+		if(args[1] == "inject"):
+			fileSize = os.path.getsize(args[3])
+			fileSize += len(args[3]) + 1
+			print("File properties:\n    Name: " + args[3] + "\n    Size: " + str(fileSize))
+			if(fileSize > maxBytes):
+				print(str(fileSize) + "/" + str(maxBytes) + " bytes to be used.")
+				print(args[3] + " is too large to be injected into " + args[2])
+			else:
+				print(str(fileSize) + "/" + str(maxBytes) + " bytes to be used.")
+				os.system("injector.py " + args[2] + " " + args[3] + " " + args[4])
+		elif(args[1] == "retrieve"):
+			print("No file to retrieve.")
 else:
+####################################
+##If there is no stored file logic##
+####################################
 	print("No Stored File.")
+	if(args[1] == "inject"):
+		fileSize = os.path.getsize(args[3])
+		fileSize += len(args[3]) + 1
+		print("File properties:\n    Name: " + args[3] + "\n    Size: " + str(fileSize))
+		if(fileSize > maxBytes):
+			print(str(fileSize) + "/" + str(maxBytes) + " bytes to be used.")
+			print(args[3] + " is too large to be injected into " + args[2])
+		else:
+			print(str(fileSize) + "/" + str(maxBytes) + " bytes to be used.")
+			os.system("injector.py " + args[2] + " " + args[3] + " " + args[4])
+	elif(args[1] == "retrieve"):
+		print("No file to retrieve.")
