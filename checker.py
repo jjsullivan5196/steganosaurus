@@ -1,6 +1,6 @@
 from PIL import Image
 from fractions import gcd
-from crazyFunctions import *
+from functions import *
 import os, sys, math, io
 
 args = sys.argv
