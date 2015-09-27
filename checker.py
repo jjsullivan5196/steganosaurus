@@ -1,7 +1,7 @@
 from PIL import Image
 from fractions import gcd
 from functions import *
-import os, sys, math, io
+import os, sys, math, io, string
 
 args = sys.argv
 
@@ -57,10 +57,19 @@ if(same and byteNum < 999999999):
 			exit()
 	#Split off the non-filename component
 	try:
-		rawName = f[1:f[0] + 1] #Oy Vey this is messy but it works
+		#######Filename Length Validity Check######
+		if(f[0] > 300):
+			raise Exception("Filename Too Long")
+		###########################################
+		rawName = f[1:f[0] + 1]
 		fileName = ""
 		for x in range(len(rawName)):
 			fileName += str(chr(rawName[x]))
+		########Filename Printability Check########
+		for c in fileName:
+			if(not c in string.printable):
+				raise Exception("Filename Unprintable")
+		###########################################
 		print("Stored File Detected.")
 		print("    Stored File Size: " + str(byteNum) + " bytes")
 		print("    Stored File Name: " + fileName)
@@ -70,10 +79,10 @@ if(same and byteNum < 999999999):
 		elif(args[1] == "retrieve"):
 			if(len(args) == 4):
 				print("File will be written to " + args[3])
-				os.system("retriever.py " + args[2] + " " + args[3])
+				os.system("retriever.py \"" + args[2] + "\" \"" + args[3] + "\"")
 			else:
 				print("File will be written to " + fileName)
-				os.system("retriever.py " + args[2] + " \"" + fileName + "\"")
+				os.system("retriever.py \"" + args[2] + "\" \"" + fileName + "\"")
 	except:
 		print("No Stored File.")
 		if(args[1] == "inject"):
@@ -85,7 +94,7 @@ if(same and byteNum < 999999999):
 				print(args[3] + " is too large to be injected into " + args[2])
 			else:
 				print(str(fileSize) + "/" + str(maxBytes) + " bytes to be used.")
-				os.system("injector.py " + args[2] + " " + args[3] + " " + args[4])
+				os.system("injector.py \"" + args[2] + "\" \"" + args[3] + "\" \"" + args[4] + "\"")
 		elif(args[1] == "retrieve"):
 			print("No file to retrieve.")
 else:
@@ -102,6 +111,6 @@ else:
 			print(args[3] + " is too large to be injected into " + args[2])
 		else:
 			print(str(fileSize) + "/" + str(maxBytes) + " bytes to be used.")
-			os.system("injector.py " + args[2] + " " + args[3] + " " + args[4])
+			os.system("injector.py \"" + args[2] + "\" \"" + args[3] + "\" \"" + args[4] + "\"")
 	elif(args[1] == "retrieve"):
 		print("No file to retrieve.")
