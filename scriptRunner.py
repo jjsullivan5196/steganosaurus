@@ -61,3 +61,4 @@ elif(args[1] == "check"):
 		os.system("checker.py \"" + args[1] + "\" \"" + args[2] + "\"")
 else:
 	print("Invalid Mode.")
+	print(default)
