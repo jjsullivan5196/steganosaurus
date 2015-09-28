@@ -8,13 +8,17 @@ args = sys.argv
 ##########################
 ##Opening the image file##
 ##########################
-myImage = Image.open(str(args[2]))
-myImage = myImage.convert("RGB")
+try:
+	myImage = Image.open(str(args[2]))
+	myImage = myImage.convert("RGB")
+except:
+	print(str(args[2]) + " is not a valid image file.")
+	os._exit(1)
 ##########################
 ##Determining Properties##
 ##########################
 xSize, ySize = myImage.size
-print("Image Properties:\n    Width: " + str(xSize) + " Height: " + str(ySize))
+print("Image Properties:\n    Name: " + str(args[2]) + "\n    Width: " + str(xSize) + "\n    Height: " + str(ySize))
 maxBytes = getMaxBytesGivenPattern(xSize * ySize, 4, matchesPattern)
 print("    " + str(maxBytes) + "/" + str(xSize * ySize) + " bytes available for writing.")
 #############################
@@ -71,8 +75,8 @@ if(same and byteNum < 999999999):
 				raise Exception("Filename Unprintable")
 		###########################################
 		print("Stored File Detected.")
-		print("    Stored File Size: " + str(byteNum) + " bytes")
 		print("    Stored File Name: " + fileName)
+		print("    Stored File Size: " + str(byteNum) + " bytes")
 		if(args[1] == "inject"):
 			print("Cannot write over already injected file.")
 			os._exit(1) #Kill it DEAD
