@@ -3,7 +3,7 @@ from fractions import gcd
 from functions import *
 import os, sys, math, io, string
 
-args = sys.argv
+args = sys.argv #("checker.py", Command, <up to 3 additional args>)
 
 ##########################
 ##Opening the image file##

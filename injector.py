@@ -2,7 +2,7 @@ from PIL import Image
 from functions import *
 import sys, io
 
-args = sys.argv
+args = sys.argv #("injector.py", "Host", "Injectee", "Output")
 ##########################
 ##Opening the image file##
 ##########################
