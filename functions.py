@@ -2,7 +2,11 @@ def matchesPattern(n, extraArgs=None):
 	#Simple bool for matching pixels
 	#Literally allows for any complexity of function to be externalized here
 	#Returns True if pixel is to be written to, false if it isn't
-	if((n+1)%3==0):
+	if(not extraArgs == None):
+		X = int(extraArgs)
+	else:
+		X = 3
+	if((n+1)%X==0):
 		return True
 	return False
 def getMaxBytesGivenPattern(size, headerSize, pattern, extraArgs = None):

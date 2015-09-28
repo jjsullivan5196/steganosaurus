@@ -42,38 +42,23 @@ if(args[1] == "inject"):
 	elif(len(args) != 5):
 		print("Invalid number of arguments. Type 'py " + args[0] + " inject' for help")
 	else:
-		if(os.path.isfile(args[2]) and os.path.isfile(args[3])):
-			os.system("checker.py \"" + args[1] + "\" \"" + args[2] + "\" \"" + args[3] + "\" \"" + args[4] + "\"")
-		else:
-			if(not os.path.isfile(args[2])):
-				print(str(args[2]) + " does not exist")
-			if(not os.path.isfile(args[3])):
-				print(str(args[3]) + " does not exist")
+		os.system("checker.py \"" + args[1] + "\" \"" + args[2] + "\" \"" + args[3] + "\" \"" + args[4] + "\"")
 elif(args[1] == "retrieve"):
 	if(len(args) == 2):
 		print(retHelp)
 	elif(len(args) > 4):
 		print("Invalid number of arguments. Type 'py " + args[0] + " retrieve' for help")
 	elif(len(args) == 3):
-		if(os.path.isfile(args[2])):
-			os.system("checker.py \"" + args[1] + "\" \"" + args[2] + "\"")
-		else:
-			print(str(args[2]) + " does not exist")
+		os.system("checker.py \"" + args[1] + "\" \"" + args[2] + "\"")
 	else:
-		if(os.path.isfile(args[2])):
-			os.system("checker.py \"" + args[1] + "\" \"" + args[2] + "\" \"" + args[3] + "\"")
-		else:
-			print(str(args[2]) + " does not exist")
+		os.system("checker.py \"" + args[1] + "\" \"" + args[2] + "\" \"" + args[3] + "\"")
 elif(args[1] == "check"):
 	if(len(args) == 2):
 		print(checkHelp)
 	elif(len(args) != 3):
 		print("Invalid number of arguments. Type 'py " + args[0] + " check' for help")
 	else:
-		if(os.path.isfile(args[2])):
-			os.system("checker.py \"" + args[1] + "\" \"" + args[2] + "\"")
-		else:
-			print(str(args[2]) + " does not exist")
+		os.system("checker.py \"" + args[1] + "\" \"" + args[2] + "\"")
 else:
 	print("Invalid Mode.")
 	print(default)

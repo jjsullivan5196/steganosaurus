@@ -4,7 +4,24 @@ from functions import *
 import os, sys, math, io, string
 
 args = sys.argv #("checker.py", Command, <up to 3 additional args>)
-
+##########################
+#######Testing Files######
+##########################
+if(args[1] == "inject"):
+	if(not os.path.isfile(args[2])):
+		print(str(args[2]) + " does not exist")
+		os._exit(1)
+	if(not os.path.isfile(args[3])):
+		print(str(args[3]) + " does not exist")
+		os._exit(1)
+elif(args[1] == "retrieve"):
+	if(not os.path.isfile(args[2])):
+		print(str(args[2]) + " does not exist")
+		os._exit(1)
+elif(args[1] == "check"):
+	if(not os.path.isfile(args[2])):
+		print(str(args[2]) + " does not exist")
+		os._exit(1)
 ##########################
 ##Opening the image file##
 ##########################
