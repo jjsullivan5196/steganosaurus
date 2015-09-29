@@ -32,9 +32,7 @@ def scan(pixList):
 				raise Exception("Filename Too Long")
 			###########################################
 			rawName = f[1:f[0] + 1]
-			fileName = ""
-			for x in range(len(rawName)):
-				fileName += str(chr(rawName[x]))
+			fileName = ''.join([chr(x) for x in rawName])
 			########Filename Printability Check########
 			for c in fileName:
 				if(not c in string.printable):
@@ -44,22 +42,18 @@ def scan(pixList):
 		except:
 			continue
 	return (False, "none", 0)
-
-def determineBestChannel(xSize, ySize, pattern, fileSize):
-	best = getMaxBytesGivenPattern(xSize * ySize, 4, pattern, 2)
-	if(best < fileSize):
+#This should only be used for (everyxthpixel)
+def determineBestChannel(xSize, ySize, pattern, fileSize): 
+	if(getMaxBytesGivenPattern(xSize * ySize, 4, pattern, 2) < fileSize):
 		return -1
 	for x in range(3, 21):
-		next = getMaxBytesGivenPattern(xSize * ySize, 4, pattern, x)
+		next = ((xSize*ySize) - 3) / x #Near-perfect approximation for the normal modulo operation
 		if(next > fileSize):
 			best = x
 		else:
 			break
 	return best
 args = sys.argv #("checker.py", Command, <up to 3 additional args>)
-##########################
-######Check Override###### This will also eventually just check the args in general
-##########################
 ##########################
 #######Testing Files######
 ##########################
@@ -84,39 +78,55 @@ elif(args[1] == "check"):
 try:
 	myImage = Image.open(str(args[2]))
 	myImage = myImage.convert("RGB")
+	xSize, ySize = myImage.size
+	print("Image Properties:\n    Name:   " + str(args[2]) + "\n    Width:  " + str(xSize) + "\n    Height: " + str(ySize))
 except:
 	print(str(args[2]) + " is not a valid image file.")
 	os._exit(1)
-##########################
-##Determining Properties##
-##########################
-xSize, ySize = myImage.size
-print("Image Properties:\n    Name:   " + str(args[2]) + "\n    Width:  " + str(xSize) + "\n    Height: " + str(ySize))
+##################################
+##Determine Injection Parameters##
+##################################
 if(args[1] == "inject"):
-	xth = 0
+	#xth = 0 #Initialize the xth argument
 	try:
+		#read the arg from the command line
 		xth = int(args.pop(len(args) - 1))
-		if(not xth == -1):
+		if(not xth == -1): #If there is a real override, measure it for validity
 			if(xth < 2 or xth > 20):
 				raise Exception("Spacer out of range.")
 	except:
 		print("Override value invalid. Number must be between 2 and 20")
 		os._exit(1)
+	#Get the size of the file to be injected
 	fileSize = os.path.getsize(args[3])
 	fileSize += len(args[3]) + 1
-	if(xth == -1): ##If we're gonna try to select the best
+	if(xth == -1): #If we're gonna try to select the best
+		#Determine the best channel
 		xth = determineBestChannel(xSize, ySize, matchesPattern, fileSize)
-		if(xth == -1): ##If there is no best
+		if(xth == -1): #If there is no best
+			#Display the max
 			maxBytes = getMaxBytesGivenPattern(xSize * ySize, 4, matchesPattern, 2)
 			print("    " + str(maxBytes) + "/" + str(xSize * ySize) + " bytes available for writing on channel " + str(2) + ".")
+			print("File properties:\n    Name: " + args[3] + "\n    Size: " + str(fileSize) + " bytes")
 			print(str(fileSize) + " bytes exceeds max possible storage.")
 			print(args[3] + " is too large to be injected into " + args[2])
+			#Exit
 			os._exit(1)
 		else: ##If we found the best
 			maxBytes = getMaxBytesGivenPattern(xSize * ySize, 4, matchesPattern, xth)
-	else:
+	else: #Otherwise, if there's an override, just use it.
 		maxBytes = getMaxBytesGivenPattern(xSize * ySize, 4, matchesPattern, xth)
+	#Check for the 2 states which don't auto-determine max size
+	if(maxBytes < fileSize):
+		#Display the max
+		print("    " + str(maxBytes) + "/" + str(xSize * ySize) + " bytes available for writing on channel " + str(xth) + ".")
+		print("File properties:\n    Name: " + args[3] + "\n    Size: " + str(fileSize) + " bytes")
+		print(str(fileSize) + " bytes exceeds max possible storage.")
+		print(args[3] + " is too large to be injected into " + args[2])
+		#Exit
+		os._exit(1)
 else:
+	#For all other modes, simply default to 2 or whatever the overrride is
 	try:
 		xth = int(args.pop(len(args) - 1))
 		if(not xth == -1):
@@ -169,13 +179,9 @@ if(same and byteNum < 999999999):
 	else:
 		print("No Stored File.")
 		if(args[1] == "inject"):
-			print("File properties:\n    Name: " + args[3] + "\n    Size: " + str(fileSize))
-			if(fileSize > maxBytes):
-				print(str(fileSize) + "/" + str(maxBytes) + " bytes to be used.")
-				print(args[3] + " is too large to be injected into " + args[2])
-			else:
-				print(str(fileSize) + "/" + str(maxBytes) + " bytes to be used.")
-				os.system("injector.py \"" + args[2] + "\" \"" + args[3] + "\" \"" + args[4] + "\" " + str(xth))
+			print("File properties:\n    Name: " + args[3] + "\n    Size: " + str(fileSize) + " bytes")
+			print(str(fileSize) + "/" + str(maxBytes) + " bytes to be used.")
+			os.system("injector.py \"" + args[2] + "\" \"" + args[3] + "\" \"" + args[4] + "\" " + str(xth))
 		elif(args[1] == "retrieve"):
 			print("No file to retrieve.")
 else:
@@ -186,12 +192,8 @@ else:
 	if(args[1] == "inject"):
 		fileSize = os.path.getsize(args[3])
 		fileSize += len(args[3]) + 1
-		print("File properties:\n    Name: " + args[3] + "\n    Size: " + str(fileSize))
-		if(fileSize > maxBytes):
-			print(str(fileSize) + "/" + str(maxBytes) + " bytes to be used.")
-			print(args[3] + " is too large to be injected into " + args[2])
-		else:
-			print(str(fileSize) + "/" + str(maxBytes) + " bytes to be used.")
-			os.system("injector.py \"" + args[2] + "\" \"" + args[3] + "\" \"" + args[4] + "\" " + str(xth))
+		print("File properties:\n    Name: " + args[3] + "\n    Size: " + str(fileSize) + " bytes")
+		print(str(fileSize) + "/" + str(maxBytes) + " bytes to be used.")
+		os.system("injector.py \"" + args[2] + "\" \"" + args[3] + "\" \"" + args[4] + "\" " + str(xth))
 	elif(args[1] == "retrieve"):
 		print("No file to retrieve.")
