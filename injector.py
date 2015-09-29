@@ -4,6 +4,10 @@ import sys, io
 
 args = sys.argv #("injector.py", "Host", "Injectee", "Output")
 ##########################
+#########Override#########
+##########################
+xth = int(args[len(args) - 1])
+##########################
 ##Opening the image file##
 ##########################
 myImage = Image.open(str(args[1]))
@@ -55,7 +59,7 @@ input("Press Enter to continue...")
 ##########################
 for n in range(4, len(pixList)):
 	x, y, z = pixList[n]
-	if(matchesPattern(n)):
+	if(matchesPattern(n, xth)):
 		#Write the data to a pixel
 		if(valIndex < len(intFiList)):
 			baseColor = averageColor(pixList[n - 1], pixList[n + 1])

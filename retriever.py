@@ -4,6 +4,10 @@ import sys, io
 
 args = sys.argv #("retriever.py", "File", "Output Override")
 ##########################
+#########Override#########
+##########################
+xth = int(args[len(args) - 1])
+##########################
 ##Opening the image file##
 ##########################
 myImage = Image.open(args[1])
@@ -37,7 +41,7 @@ for n in range(4, len(pixList)):
 		if(valIndex >= byteNum):
 			print("\n" + str(byteNum) + " bytes retrieved.")
 			break
-		if(matchesPattern(n)):
+		if(matchesPattern(n, xth)):
 			#Extract data from a pixel
 			baseColor = averageColor(pixList[n - 1], pixList[n + 1])
 			dataColor = retrieveDataColorBaseX((x, y, z), baseColor, 7)
