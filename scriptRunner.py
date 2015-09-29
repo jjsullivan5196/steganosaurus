@@ -33,7 +33,7 @@ description: Checks an image for injectability and presence of injected files.
 positional arguments:
   image       Image to check.'''
 ###Variable Defaults###
-x = "3"
+x = "-1"
 if(len(args) >=3):
 	if(args[1] == "-o"):
 		#Eventually this will be HUGE override code
@@ -42,7 +42,7 @@ if(len(args) >=3):
 ###LOGIC###
 if(len(args) == 1):
 	print(default)
-	exit()
+	os._exit(1)
 #Non-options mode
 if(args[1] == "inject"):
 	if(len(args) == 2):

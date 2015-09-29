@@ -3,50 +3,6 @@ from fractions import gcd
 from functions import *
 import os, sys, math, io, string
 
-#####################################################################################################
-############################Function version for implementation######################################
-#####################################################################################################
-def scan(pixList):
-	for xth in range(2, 21):
-		f = []
-		n = 4
-		while(len(f) < 300):#300 is the maximum feasible filename including an INSANE 40 char extension
-			try:
-				x, y, z = pixList[n]
-				if(matchesPattern(n, xth)):
-					#Extract data from a pixel
-					baseColor = averageColor(pixList[n - 1], pixList[n + 1])
-					dataColor = retrieveDataColorBaseX((x, y, z), baseColor, 7)
-					data = colorTupleBaseXToVal(dataColor, 7)
-					f.append(data)
-					n += 1
-				else:
-					n += 1
-			except:
-				print("\nERROR: Could not retrieve bytes.")
-				exit()
-		#Split off the non-filename component
-		try:
-			#######Filename Length Validity Check######
-			if(f[0] > 300):
-				raise Exception("Filename Too Long")
-			###########################################
-			rawName = f[1:f[0] + 1]
-			fileName = ""
-			for x in range(len(rawName)):
-				fileName += str(chr(rawName[x]))
-			########Filename Printability Check########
-			for c in fileName:
-				if(not c in string.printable):
-					raise Exception("Filename Unprintable")
-			###########################################
-			return (True, fileName, xth)
-		except:
-			continue
-	return (False, "none", 0)
-
-
-
 args = sys.argv #("checker.py", Command, <up to 3 additional args>)
 ##########################
 ######Check Override###### This will also eventually just check the args in general
@@ -90,9 +46,9 @@ except:
 ##Determining Properties##
 ##########################
 xSize, ySize = myImage.size
-print("Image Properties:\n    Name:   " + str(args[2]) + "\n    Width:  " + str(xSize) + "\n    Height: " + str(ySize))
+print("Image Properties:\n    Name: " + str(args[2]) + "\n    Width: " + str(xSize) + "\n    Height: " + str(ySize))
 maxBytes = getMaxBytesGivenPattern(xSize * ySize, 4, matchesPattern, xth)
-print("    " + str(maxBytes) + "/" + str(xSize * ySize) + " bytes available for writing on channel " + str(xth))
+print("    " + str(maxBytes) + "/" + str(xSize * ySize) + " bytes available for writing.")
 #############################
 ##Checking for Stored Files##
 #############################
@@ -114,23 +70,52 @@ for x, y, z, q in zip(bcol1, bcol2, bcol3, pixList[3]):
 ###################################
 if(same and byteNum < 999999999):
 	#Pasted from Retriever, repurposed for finding filename
-	result = scan(pixList)
-	if(result[0] == True):
+	f = []
+	n = 4
+	while(len(f) < 300):#300 is the maximum feasible filename including an INSANE 40 char extension
+		try:
+			x, y, z = pixList[n]
+			if(matchesPattern(n, xth)):
+				#Extract data from a pixel
+				baseColor = averageColor(pixList[n - 1], pixList[n + 1])
+				dataColor = retrieveDataColorBaseX((x, y, z), baseColor, 7)
+				data = colorTupleBaseXToVal(dataColor, 7)
+				f.append(data)
+				n += 1
+			else:
+				n += 1
+		except:
+			print("\nERROR: Could not retrieve bytes.")
+			exit()
+	#Split off the non-filename component
+	try:
+		#######Filename Length Validity Check######
+		if(f[0] > 300):
+			raise Exception("Filename Too Long")
+		###########################################
+		rawName = f[1:f[0] + 1]
+		fileName = ""
+		for x in range(len(rawName)):
+			fileName += str(chr(rawName[x]))
+		########Filename Printability Check########
+		for c in fileName:
+			if(not c in string.printable):
+				raise Exception("Filename Unprintable")
+		###########################################
 		print("Stored File Detected:")
-		print("    Stored File Name:    " + result[1])
-		print("    Stored File Size:    " + str(byteNum) + " bytes")
-		print("    Stored File Channel: " + str(result[2]))
+		print("    Stored File Name: " + fileName)
+		print("    Stored File Size: " + str(byteNum) + " bytes")
 		if(args[1] == "inject"):
 			print("Cannot write over already injected file.")
 			os._exit(1) #Kill it DEAD
 		elif(args[1] == "retrieve"):
 			if(len(args) == 4):
 				print("File will be written to " + args[3])
-				os.system("retriever.py \"" + args[2] + "\" \"" + args[3] + "\" " + str(result[2]))
+				os.system("retriever.py \"" + args[2] + "\" \"" + args[3] + "\" " + str(xth))
 			else:
-				print("File will be written to " + result[1])
-				os.system("retriever.py \"" + args[2] + "\" \"" + result[1] + "\" " + str(result[2]))
-	else:
+				print("File will be written to " + fileName)
+				os.system("retriever.py \"" + args[2] + "\" \"" + fileName + "\" " + str(xth))
+	except:
 		print("No Stored File.")
 		if(args[1] == "inject"):
 			fileSize = os.path.getsize(args[3])

@@ -45,21 +45,20 @@ def scan(pixList):
 			continue
 	return (False, "none", 0)
 
-def determineBestChannel(xSize, ySize, pattern, fileSize):
-	best = getMaxBytesGivenPattern(xSize * ySize, 4, pattern, 2)
-	if(best < fileSize):
-		return -1
-	for x in range(3, 21):
-		next = getMaxBytesGivenPattern(xSize * ySize, 4, pattern, x)
-		if(next > fileSize):
-			best = x
-		else:
-			break
-	return best
+
+
 args = sys.argv #("checker.py", Command, <up to 3 additional args>)
 ##########################
 ######Check Override###### This will also eventually just check the args in general
 ##########################
+xth = 3
+try:
+	xth = int(args.pop(len(args) - 1))
+	if(xth < 2 or xth > 20):
+		raise Exception("Spacer out of range.")
+except:
+	print("Override value invalid. Number must be between 2 and 20")
+	os._exit(1)
 ##########################
 #######Testing Files######
 ##########################
@@ -92,42 +91,7 @@ except:
 ##########################
 xSize, ySize = myImage.size
 print("Image Properties:\n    Name:   " + str(args[2]) + "\n    Width:  " + str(xSize) + "\n    Height: " + str(ySize))
-if(args[1] == "inject"):
-	xth = 0
-	try:
-		xth = int(args.pop(len(args) - 1))
-		if(not xth == -1):
-			if(xth < 2 or xth > 20):
-				raise Exception("Spacer out of range.")
-	except:
-		print("Override value invalid. Number must be between 2 and 20")
-		os._exit(1)
-	fileSize = os.path.getsize(args[3])
-	fileSize += len(args[3]) + 1
-	if(xth == -1): ##If we're gonna try to select the best
-		xth = determineBestChannel(xSize, ySize, matchesPattern, fileSize)
-		if(xth == -1): ##If there is no best
-			maxBytes = getMaxBytesGivenPattern(xSize * ySize, 4, matchesPattern, 2)
-			print("    " + str(maxBytes) + "/" + str(xSize * ySize) + " bytes available for writing on channel " + str(2) + ".")
-			print(str(fileSize) + " bytes exceeds max possible storage.")
-			print(args[3] + " is too large to be injected into " + args[2])
-			os._exit(1)
-		else: ##If we found the best
-			maxBytes = getMaxBytesGivenPattern(xSize * ySize, 4, matchesPattern, xth)
-	else:
-		maxBytes = getMaxBytesGivenPattern(xSize * ySize, 4, matchesPattern, xth)
-else:
-	try:
-		xth = int(args.pop(len(args) - 1))
-		if(not xth == -1):
-			if(xth < 2 or xth > 20):
-				raise Exception("Spacer out of range.")
-		else:
-			xth = 2
-	except:
-		print("Override value invalid. Number must be between 2 and 20")
-		os._exit(1)
-	maxBytes = getMaxBytesGivenPattern(xSize * ySize, 4, matchesPattern, xth)
+maxBytes = getMaxBytesGivenPattern(xSize * ySize, 4, matchesPattern, xth)
 print("    " + str(maxBytes) + "/" + str(xSize * ySize) + " bytes available for writing on channel " + str(xth) + ".")
 #############################
 ##Checking for Stored Files##
@@ -169,6 +133,8 @@ if(same and byteNum < 999999999):
 	else:
 		print("No Stored File.")
 		if(args[1] == "inject"):
+			fileSize = os.path.getsize(args[3])
+			fileSize += len(args[3]) + 1
 			print("File properties:\n    Name: " + args[3] + "\n    Size: " + str(fileSize))
 			if(fileSize > maxBytes):
 				print(str(fileSize) + "/" + str(maxBytes) + " bytes to be used.")
