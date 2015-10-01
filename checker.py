@@ -1,6 +1,7 @@
 from PIL import Image
 from fractions import gcd
 from functions import *
+from algorithms import *
 import os, sys, math, io, string
 
 #####################################################################################################
@@ -8,23 +9,8 @@ import os, sys, math, io, string
 #####################################################################################################
 def scan(pixList):
 	for xth in range(2, 21):
-		f = []
-		n = 4
-		while(len(f) < 300):#300 is the maximum feasible filename including an INSANE 40 char extension
-			try:
-				x, y, z = pixList[n]
-				if(matchesPattern(n, xth)):
-					#Extract data from a pixel
-					baseColor = averageColor(pixList[n - 1], pixList[n + 1])
-					dataColor = retrieveDataColorBaseX((x, y, z), baseColor, 7)
-					data = colorTupleBaseXToVal(dataColor, 7)
-					f.append(data)
-					n += 1
-				else:
-					n += 1
-			except:
-				print("\nERROR: Could not retrieve bytes.")
-				exit()
+		#print("Checking channel " + str(xth))
+		f = xthPixelRetrieve([pixList, 300, [xth]], silent=True)
 		#Split off the non-filename component
 		try:
 			#######Filename Length Validity Check######
@@ -37,15 +23,20 @@ def scan(pixList):
 			for c in fileName:
 				if(not c in string.printable):
 					raise Exception("Filename Unprintable")
+				else:
+					#print(c)
+					pass
 			###########################################
 			return (True, fileName, xth)
-		except:
+		except Exception as e:
+			#print(e)
 			continue
 	return (False, "none", 0)
 #This should only be used for (everyxthpixel)
 def determineBestChannel(xSize, ySize, pattern, fileSize): 
 	if(getMaxBytesGivenPattern(xSize * ySize, 4, pattern, 2) < fileSize):
 		return -1
+	best = 2 #Largest Channel
 	for x in range(3, 21):
 		next = ((xSize*ySize) - 3) / x #Near-perfect approximation for the normal modulo operation
 		if(next > fileSize):
@@ -53,6 +44,9 @@ def determineBestChannel(xSize, ySize, pattern, fileSize):
 		else:
 			break
 	return best
+##########################
+#########Get Args#########
+##########################
 args = sys.argv #("checker.py", Command, <up to 3 additional args>)
 ##########################
 #######Testing Files######
@@ -102,10 +96,10 @@ if(args[1] == "inject"):
 	fileSize += len(args[3]) + 1
 	if(xth == -1): #If we're gonna try to select the best
 		#Determine the best channel
-		xth = determineBestChannel(xSize, ySize, matchesPattern, fileSize)
+		xth = determineBestChannel(xSize, ySize, xthPattern, fileSize)
 		if(xth == -1): #If there is no best
 			#Display the max
-			maxBytes = getMaxBytesGivenPattern(xSize * ySize, 4, matchesPattern, 2)
+			maxBytes = getMaxBytesGivenPattern(xSize * ySize, 4, xthPattern, 2)
 			print("    " + str(maxBytes) + "/" + str(xSize * ySize) + " bytes available for writing on channel " + str(2) + ".")
 			print("File properties:\n    Name: " + args[3] + "\n    Size: " + str(fileSize) + " bytes")
 			print(str(fileSize) + " bytes exceeds max possible storage.")
@@ -113,9 +107,9 @@ if(args[1] == "inject"):
 			#Exit
 			os._exit(1)
 		else: ##If we found the best
-			maxBytes = getMaxBytesGivenPattern(xSize * ySize, 4, matchesPattern, xth)
+			maxBytes = getMaxBytesGivenPattern(xSize * ySize, 4, xthPattern, xth)
 	else: #Otherwise, if there's an override, just use it.
-		maxBytes = getMaxBytesGivenPattern(xSize * ySize, 4, matchesPattern, xth)
+		maxBytes = getMaxBytesGivenPattern(xSize * ySize, 4, xthPattern, xth)
 	#Check for the 2 states which don't auto-determine max size
 	if(maxBytes < fileSize):
 		#Display the max
@@ -137,7 +131,7 @@ else:
 	except:
 		print("Override value invalid. Number must be between 2 and 20")
 		os._exit(1)
-	maxBytes = getMaxBytesGivenPattern(xSize * ySize, 4, matchesPattern, xth)
+	maxBytes = getMaxBytesGivenPattern(xSize * ySize, 4, xthPattern, xth)
 print("    " + str(maxBytes) + "/" + str(xSize * ySize) + " bytes available for writing on channel " + str(xth) + ".")
 #############################
 ##Checking for Stored Files##

@@ -1,6 +1,7 @@
 from PIL import Image
 from functions import *
-import sys, io
+from algorithms import *
+import sys, io, ntpath
 
 args = sys.argv #("injector.py", "Host", "Injectee", "Output")
 ##########################
@@ -19,9 +20,10 @@ xSize, ySize = myImage.size
 ##Opening the injectee file##
 #############################
 file = io.open(str(args[2]), 'rb')
+fileName = ntpath.basename(args[2]) #Takes the path off, so the path doesn't get appended with the file
 intFiList = []
-intFiList.append(len(args[2]))
-for c in str(args[2]):
+intFiList.append(len(fileName))
+for c in str(fileName): 
 	intFiList.append(ord(c))
 intFiList.extend(list(file.read()))
 pixList = myImage.getdata()
@@ -57,22 +59,7 @@ input("Press Enter to continue...")
 ##########################
 ##Add File Data to Image##
 ##########################
-for n in range(4, len(pixList)):
-	x, y, z = pixList[n]
-	if(matchesPattern(n, xth)):
-		#Write the data to a pixel
-		if(valIndex < len(intFiList)):
-			baseColor = averageColor(pixList[n - 1], pixList[n + 1])
-			dataColor = colorTupleFromValue(intFiList[valIndex], 7)
-			finalColor = injectDataColorBaseX(baseColor, dataColor, 7)
-			newPixList.append(finalColor)
-			valIndex += 1
-			sys.stdout.write("\r" + str(int((valIndex/byteNum) * 100)) + "% Complete")
-			sys.stdout.flush()
-		else:
-			newPixList.append((x, y, z))
-	else:
-		newPixList.append((x, y, z))
-print("!") #To satisfy my autism
+newPixList = xthPixelInject([pixList, newPixList, intFiList, [xth]])
+
 copyImage.putdata(newPixList)
 copyImage.save(str(args[3]))
