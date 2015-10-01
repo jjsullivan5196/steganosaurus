@@ -109,21 +109,30 @@ def retrieveBaseColor(finalColor, dataColor, base): #used for checker, ugly
 	spacer = base - 1
 	#Red Channel
 	if(x == 0):
-		i = R + spacer
+		if(R - x > spacer):
+			i = R + spacer
+		else:
+			i = R
 	elif((R + x - spacer) < spacer):
 		i = R - x
 	else:
 		i = R + spacer - x
 	#Green Channel
 	if(y == 0):
-		j = G + spacer
+		if(G - j > spacer):
+			j = G + spacer
+		else:
+			j = G
 	elif((G + y - spacer) < spacer):
 		j = G - y
 	else:
 		j = G + spacer - y
 	#Blue Channel
 	if(z == 0):
-		k = B + spacer
+		if(B - k > spacer):
+			k = B + spacer
+		else:
+			k = B
 	elif((B + z - spacer) < spacer):
 		k = B - z
 	else:
