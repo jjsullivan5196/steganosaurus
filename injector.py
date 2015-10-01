@@ -7,7 +7,15 @@ args = sys.argv #("injector.py", "Host", "Injectee", "Output")
 ##########################
 #########Override#########
 ##########################
-xth = int(args[len(args) - 1])
+#print(args)
+alg = args.pop(len(args) - 1)
+if(alg == "xth"):
+	xth = int(args.pop(len(args) - 1))
+elif(alg == "inColor"):
+	dist = int(args.pop(len(args) - 1))
+	B = int(args.pop(len(args) - 1))
+	G = int(args.pop(len(args) - 1))
+	R = int(args.pop(len(args) - 1))
 ##########################
 ##Opening the image file##
 ##########################
@@ -59,7 +67,13 @@ input("Press Enter to continue...")
 ##########################
 ##Add File Data to Image##
 ##########################
-newPixList = xthPixelInject([pixList, newPixList, intFiList, [xth]])
+if(alg == "xth"):
+	newPixList = xthPixelInject([pixList, newPixList, intFiList, [xth]])
+if(alg == "inColor"):
+	newPixList = inColorInject([pixList, newPixList, intFiList, [(R, G, B), dist]])
+else:
+	print("Algorithms other than xth not yet supported.")
+	os._exit(1)
 
 copyImage.putdata(newPixList)
 copyImage.save(str(args[3]))

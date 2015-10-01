@@ -5,11 +5,30 @@ def xthPattern(n, xth = 3):
 	if((n+1)%xth==0):
 		return True
 	return False
+def inColorPattern(n, avgColor, otherData = [(0, 0, 0), 10]):
+	#Simple bool for matching pixels
+	#Literally allows for any complexity of function to be externalized here
+	#Returns True if pixel is to be written to, false if it isn't
+	targetColor = otherData[0]
+	distance = otherData[1]
+	if((n%2 == 0) and (avgColor[0] in range(targetColor[0] - distance, targetColor[0] + distance + 1)) and (avgColor[1] in range(targetColor[1] - distance, targetColor[1] + distance + 1)) and (avgColor[2] in range(targetColor[2] - distance, targetColor[2] + distance + 1))):
+		return True
+	return False
 def getMaxBytesGivenPattern(size, headerSize, pattern, extraArgs = None):
 	s = 0
 	for x in range(headerSize, size):
 		if(pattern(x, extraArgs)):
 			s += 1
+	return s
+def getMaxBytesGivenColor(size, pixList, headerSize, pattern, extraArgs = None):
+	s = 0
+	for x in range(headerSize, size):
+		try:
+			baseColor = averageColor(pixList[x - 1], pixList[x + 1])
+			if(pattern(x, baseColor, extraArgs)):
+				s += 1
+		except:
+			break
 	return s
 ##Used for easy color changing
 def averageColor(c1, c2):

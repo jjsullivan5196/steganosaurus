@@ -7,7 +7,15 @@ args = sys.argv #("retriever.py", "File", "Output Override")
 ##########################
 #########Override#########
 ##########################
-xth = int(args[len(args) - 1])
+#print(args)
+alg = args.pop(len(args) - 1)
+if(alg == "xth"):
+	xth = int(args.pop(len(args) - 1))
+elif(alg == "inColor"):
+	dist = int(args.pop(len(args) - 1))
+	B = int(args.pop(len(args) - 1))
+	G = int(args.pop(len(args) - 1))
+	R = int(args.pop(len(args) - 1))
 ##########################
 ##Opening the image file##
 ##########################
@@ -39,8 +47,13 @@ input("Press Enter to continue")
 ############################
 ##Get File Data from Image##
 ############################
-f = xthPixelRetrieve([pixList, byteNum, [xth]])
-
+if(alg == "xth"):
+	f = xthPixelRetrieve([pixList, byteNum, [xth]])
+if(alg == "inColor"):
+	f = inColorRetrieve([pixList, byteNum, [(R, G, B), dist]])
+else:
+	print("Algorithms other than xth not yet supported.")
+	os._exit(1)
 #Cut the filename component off the data
 nameLength = (f[0] + 1)
 f = f[nameLength:]

@@ -33,12 +33,44 @@ description: Checks an image for injectability and presence of injected files.
 positional arguments:
   image       Image to check.'''
 ###Variable Defaults###
-x = "-1"
+opt = ["-1"]
+alg = "xth"
+#First, read algorithm if possible
+if(len(args) >=3):
+	if(args[1] == "-a"):
+		args.pop(1)
+		alg = args.pop(1)
+if(alg == "inColor"):
+	opt = ["0", "0", "0", "10"]
+#Again, make sure there's some command to read
 if(len(args) >=3):
 	if(args[1] == "-o"):
-		#Eventually this will be HUGE override code
-		args.pop(1)
-		x = args.pop(1)
+		if(alg == "xth"):
+			opt = []
+			args.pop(1)
+			opt.append(args.pop(1))
+		#There'll eventually be more here
+		elif(alg == "inColor"):
+			opt = []
+			args.pop(1)
+			opt.append(args.pop(1)) #R
+			opt.append(args.pop(1)) #G
+			opt.append(args.pop(1)) #B
+			try:
+				int(args[1])
+				opt.append(args.pop(1)) #Dist
+			except:
+				opt.append("10")
+			try:
+				for x in opt:
+					int(x)
+			except:
+				print("Malformed Options, use -o R G B distance")
+				os._exit(1)
+algArg = ""
+for x in opt:
+	algArg += x + " "
+algArg += alg
 ###LOGIC###
 if(len(args) == 1):
 	print(default)
@@ -50,23 +82,23 @@ if(args[1] == "inject"):
 	elif(len(args) != 5):
 		print("Invalid number of arguments. Type 'py " + args[0] + " inject' for help")
 	else:
-		os.system("checker.py \"" + args[1] + "\" \"" + args[2] + "\" \"" + args[3] + "\" \"" + args[4] + "\" " + x)
+		os.system("checker.py \"" + args[1] + "\" \"" + args[2] + "\" \"" + args[3] + "\" \"" + args[4] + "\" " + algArg)
 elif(args[1] == "retrieve"):
 	if(len(args) == 2):
 		print(retHelp)
 	elif(len(args) > 4):
 		print("Invalid number of arguments. Type 'py " + args[0] + " retrieve' for help")
 	elif(len(args) == 3):
-		os.system("checker.py \"" + args[1] + "\" \"" + args[2] + "\" " + x)
+		os.system("checker.py \"" + args[1] + "\" \"" + args[2] + "\" " + algArg)
 	else:
-		os.system("checker.py \"" + args[1] + "\" \"" + args[2] + "\" \"" + args[3] + "\" " + x)
+		os.system("checker.py \"" + args[1] + "\" \"" + args[2] + "\" \"" + args[3] + "\" " + algArg)
 elif(args[1] == "check"):
 	if(len(args) == 2):
 		print(checkHelp)
 	elif(len(args) != 3):
 		print("Invalid number of arguments. Type 'py " + args[0] + " check' for help")
 	else:
-		os.system("checker.py \"" + args[1] + "\" \"" + args[2] + "\" " + x)
+		os.system("checker.py \"" + args[1] + "\" \"" + args[2] + "\" " + algArg)
 else:
 	print("Invalid Mode.")
 	print(default)
