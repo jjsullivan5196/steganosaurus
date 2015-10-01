@@ -69,7 +69,7 @@ input("Press Enter to continue...")
 ##########################
 if(alg == "xth"):
 	newPixList = xthPixelInject([pixList, newPixList, intFiList, [xth]])
-if(alg == "inColor"):
+elif(alg == "inColor"):
 	newPixList = inColorInject([pixList, newPixList, intFiList, [(R, G, B), dist]])
 else:
 	print("Algorithms other than xth not yet supported.")

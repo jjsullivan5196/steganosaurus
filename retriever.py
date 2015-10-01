@@ -49,7 +49,7 @@ input("Press Enter to continue")
 ############################
 if(alg == "xth"):
 	f = xthPixelRetrieve([pixList, byteNum, [xth]])
-if(alg == "inColor"):
+elif(alg == "inColor"):
 	f = inColorRetrieve([pixList, byteNum, [(R, G, B), dist]])
 else:
 	print("Algorithms other than xth not yet supported.")
