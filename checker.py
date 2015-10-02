@@ -14,8 +14,8 @@ def scanXth(pixList):
 		#Split off the non-filename component
 		try:
 			#######Filename Length Validity Check######
-			if(f[0] > 300):
-				raise Exception("Filename Too Long")
+			if(f[0] > 300 or f[0] < 1):
+				raise Exception("Filename Too Long: " + str(f[0]))
 			###########################################
 			rawName = f[1:f[0] + 1]
 			fileName = ''.join([chr(x) for x in rawName])
@@ -39,7 +39,7 @@ def scanInColor(pixList, color, dist):
 	#Split off the non-filename component
 	try:
 		#######Filename Length Validity Check######
-		if(f[0] > 300):
+		if(f[0] > 300 or f[0] < 1):
 			raise Exception("Filename Too Long")
 		###########################################
 		rawName = f[1:f[0] + 1]
@@ -265,6 +265,7 @@ else:
 ####################################
 ##If there is no stored file logic##
 ####################################
+	#print("Primary Check Failed.")
 	print("No Stored File.")
 	if(args[1] == "inject"):
 		fileSize = os.path.getsize(args[3])

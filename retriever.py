@@ -20,6 +20,7 @@ elif(alg == "inColor"):
 ##Opening the image file##
 ##########################
 myImage = Image.open(args[1])
+myImage = myImage.convert("RGB")
 xSize, ySize = myImage.size
 #print("Image Dimensions:\n    Width: " + str(xSize) + " Height: " + str(ySize))
 
