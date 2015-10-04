@@ -8,7 +8,7 @@ def xthPixelInject(args = None): #args should be [pixList, newPixList, intFiList
 	xth = int(args[3][0]) #The only arg this accepts is X
 	valIndex = 0
 	byteNum = len(intFiList)
-	for n in range(4, len(pixList)):
+	for n in range(4, len(pixList) - 1):
 		x, y, z = pixList[n]
 		if(xthPattern(n, xth)):
 			#Write the data to a pixel
@@ -33,7 +33,7 @@ def xthPixelRetrieve(args = None, silent = False):#args should be [pixList, byte
 	xth = args[2][0]
 	f = []
 	valIndex = 0
-	for n in range(4, len(pixList)):
+	for n in range(4, len(pixList) - 1):
 		try:
 			x, y, z = pixList[n]
 			if(valIndex >= byteNum):

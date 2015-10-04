@@ -35,6 +35,8 @@ positional arguments:
 ###Variable Defaults###
 opt = ["-1"]
 alg = "xth"
+colorOpts = ["black", "white", "red", "green", "blue", "yellow", "orange", "purple"]
+colorDict = {"black": (0, 0, 0), "white": (255, 255, 255), "red": (255, 0, 0), "orange":(255, 127, 0), "yellow":(255, 255, 0), "green":(0, 255, 0), "blue":(0, 0, 255), "purple": (255, 0, 255)}
 #First, read algorithm if possible
 if(len(args) >=3):
 	if(args[1] == "-a"):
@@ -53,9 +55,15 @@ if(len(args) >=3):
 		elif(alg == "inColor"):
 			opt = []
 			args.pop(1)
-			opt.append(args.pop(1)) #R
-			opt.append(args.pop(1)) #G
-			opt.append(args.pop(1)) #B
+			if(args[1] in colorOpts):
+				opt.append(str(colorDict[args[1]][0]))
+				opt.append(str(colorDict[args[1]][1]))
+				opt.append(str(colorDict[args[1]][2]))
+				args.pop(1)
+			else:
+				opt.append(args.pop(1)) #R
+				opt.append(args.pop(1)) #G
+				opt.append(args.pop(1)) #B
 			try:
 				int(args[1])
 				opt.append(args.pop(1)) #Dist
