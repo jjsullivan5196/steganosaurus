@@ -1,4 +1,4 @@
-import os, sys
+import os, sys, subprocess
 
 args = sys.argv
 
@@ -33,6 +33,9 @@ description: Checks an image for injectability and presence of injected files.
 positional arguments:
   image       Image to check.'''
 ###Variable Defaults###
+command = []
+command.append(sys.executable)
+command.append("checker.py")
 opt = ["-1"]
 alg = "xth"
 colorOpts = ["black", "white", "red", "green", "blue", "yellow", "orange", "purple"]
@@ -75,14 +78,18 @@ if(len(args) >=3):
 			except:
 				print("Malformed Options, use -o R G B distance")
 				os._exit(1)
-algArg = ""
+algArg = []
 for x in opt:
-	algArg += x + " "
-algArg += alg
+	algArg.append(x)
+algArg.append(alg)
 ###LOGIC###
 if(len(args) == 1):
 	print(default)
 	os._exit(1)
+for x in args[1:]:
+	command.append(x)
+for y in algArg:
+	command.append(y)
 #Non-options mode
 if(args[1] == "inject"):
 	if(len(args) == 2):
@@ -90,23 +97,23 @@ if(args[1] == "inject"):
 	elif(len(args) != 5):
 		print("Invalid number of arguments. Type 'py " + args[0] + " inject' for help")
 	else:
-		os.system("checker.py \"" + args[1] + "\" \"" + args[2] + "\" \"" + args[3] + "\" \"" + args[4] + "\" " + algArg)
+		subprocess.call(command)
 elif(args[1] == "retrieve"):
 	if(len(args) == 2):
 		print(retHelp)
 	elif(len(args) > 4):
 		print("Invalid number of arguments. Type 'py " + args[0] + " retrieve' for help")
 	elif(len(args) == 3):
-		os.system("checker.py \"" + args[1] + "\" \"" + args[2] + "\" " + algArg)
+		subprocess.call(command)
 	else:
-		os.system("checker.py \"" + args[1] + "\" \"" + args[2] + "\" \"" + args[3] + "\" " + algArg)
+		subprocess.call(command)
 elif(args[1] == "check"):
 	if(len(args) == 2):
 		print(checkHelp)
 	elif(len(args) != 3):
 		print("Invalid number of arguments. Type 'py " + args[0] + " check' for help")
 	else:
-		os.system("checker.py \"" + args[1] + "\" \"" + args[2] + "\" " + algArg)
+		subprocess.call(command)
 else:
 	print("Invalid Mode.")
 	print(default)

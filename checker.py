@@ -2,7 +2,7 @@ from PIL import Image
 from fractions import gcd
 from functions import *
 from algorithms import *
-import os, sys, math, io, string
+import os, sys, math, io, string, subprocess
 
 #####################################################################################################
 ############################Function version for implementation######################################
@@ -70,6 +70,9 @@ def determineBestChannel(xSize, ySize, pattern, fileSize):
 	return best
 ##########################################################################
 args = sys.argv
+command = []
+command.append(sys.executable)
+algorithmCommand = []
 #######################################
 #########Get Algorithm Options#########
 #######################################
@@ -81,6 +84,8 @@ if(alg == "xth"):
 		if(not xth == -1): #If there is a real override, measure it for validity
 			if(xth < 2 or xth > 20):
 				raise Exception("Spacer out of range.")
+		algorithmCommand.append(str(xth))
+		algorithmCommand.append(alg)
 	except:
 		print("Override value invalid. Number must be between 2 and 20")
 		os._exit(1)
@@ -92,6 +97,11 @@ elif(alg == "inColor"):
 	#print(str(R) + ", " + str(G) + ", " + str(B) + ", " + str(dist))
 	algArgs = str(R) + " " + str(G) + " " + str(B) + " " + str(dist)
 	#print(args)
+	algorithmCommand.append(str(R))
+	algorithmCommand.append(str(G))
+	algorithmCommand.append(str(B))
+	algorithmCommand.append(str(dist))
+	algorithmCommand.append(alg)
 else:
 	print("Algorithms other than xth not yet supported.")
 	os._exit(1)
@@ -107,10 +117,12 @@ if(args[1] == "inject"):
 	if(not os.path.isfile(args[3])):
 		print(str(args[3]) + " does not exist")
 		os._exit(1)
+	command.append("injector.py")
 elif(args[1] == "retrieve"):
 	if(not os.path.isfile(args[2])):
 		print(str(args[2]) + " does not exist")
 		os._exit(1)
+	command.append("retriever.py")
 elif(args[1] == "check"):
 	if(not os.path.isfile(args[2])):
 		print(str(args[2]) + " does not exist")
@@ -212,6 +224,7 @@ if(same and byteNum < 999999999):
 		result = scanXth(pixList)
 		if(result[0] == True):
 			algArgs = str(result[2])
+			command.append(args[2])
 			print("Stored File Detected:")
 			print("    Stored File Name:    " + result[1])
 			print("    Stored File Size:    " + str(byteNum) + " bytes")
@@ -222,21 +235,32 @@ if(same and byteNum < 999999999):
 			elif(args[1] == "retrieve"):
 				if(len(args) == 4):
 					print("File will be written to " + args[3])
-					os.system("retriever.py \"" + args[2] + "\" \"" + args[3] + "\" " + algArgs + " " + alg)
+					command.append(args[3])
+					for x in algorithmCommand:
+						command.append(x)
+					subprocess.call(command)
 				else:
 					print("File will be written to " + result[1])
-					os.system("retriever.py \"" + args[2] + "\" \"" + result[1] + "\" " + algArgs + " " + alg)
+					command.append(result[1])
+					for x in algorithmCommand:
+						command.append(x)
+					subprocess.call(command)
 		else:
 			print("No Stored File.")
 			if(args[1] == "inject"):
 				print("File properties:\n    Name: " + args[3] + "\n    Size: " + str(fileSize) + " bytes")
 				print(str(fileSize) + "/" + str(maxBytes) + " bytes to be used.")
-				os.system("injector.py \"" + args[2] + "\" \"" + args[3] + "\" \"" + args[4] + "\" " + algArgs + " " + alg)
+				for x in args[2:5]:
+					command.append(x)
+				for y in algorithmCommand:
+					command.append(y)
+				subprocess.call(command)
 			elif(args[1] == "retrieve"):
 				print("No file to retrieve.")
 	elif(alg == "inColor"):
 		result = scanInColor(pixList, (int(R), int(G), int(B)), int(dist))
 		if(result[0] == True):
+			command.append(args[2])
 			print("Stored File Detected:")
 			print("    Stored File Name:    " + result[1])
 			print("    Stored File Size:    " + str(byteNum) + " bytes")
@@ -246,16 +270,26 @@ if(same and byteNum < 999999999):
 			elif(args[1] == "retrieve"):
 				if(len(args) == 4):
 					print("File will be written to " + args[3])
-					os.system("retriever.py \"" + args[2] + "\" \"" + args[3] + "\" " + algArgs + " " + alg)
+					command.append(args[3])
+					for x in algorithmCommand:
+						command.append(x)
+					subprocess.call(command)
 				else:
 					print("File will be written to " + result[1])
-					os.system("retriever.py \"" + args[2] + "\" \"" + result[1] + "\" " + algArgs + " " + alg)
+					command.append(result[1])
+					for x in algorithmCommand:
+						command.append(x)
+					subprocess.call(command)
 		else:
 			print("No Stored File.")
 			if(args[1] == "inject"):
 				print("File properties:\n    Name: " + args[3] + "\n    Size: " + str(fileSize) + " bytes")
 				print(str(fileSize) + "/" + str(maxBytes) + " bytes to be used.")
-				os.system("injector.py \"" + args[2] + "\" \"" + args[3] + "\" \"" + args[4] + "\" " + algArgs + " " + alg)
+				for x in args[2:5]:
+					command.append(x)
+				for y in algorithmCommand:
+					command.append(y)
+				subprocess.call(command)
 			elif(args[1] == "retrieve"):
 				print("No file to retrieve.")
 	else:
@@ -272,6 +306,10 @@ else:
 		fileSize += len(args[3]) + 1
 		print("File properties:\n    Name: " + args[3] + "\n    Size: " + str(fileSize) + " bytes")
 		print(str(fileSize) + "/" + str(maxBytes) + " bytes to be used.")
-		os.system("injector.py \"" + args[2] + "\" \"" + args[3] + "\" \"" + args[4] + "\" " + algArgs + " " + alg)
+		for x in args[2:5]:
+			command.append(x)
+		for y in algorithmCommand:
+			command.append(y)
+		subprocess.call(command)
 	elif(args[1] == "retrieve"):
 		print("No file to retrieve.")
