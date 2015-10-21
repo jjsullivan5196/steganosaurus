@@ -62,45 +62,22 @@ def injectDataColorBaseX(baseColor, dataColor, base):
 	R, G, B = baseColor
 	x, y, z = dataColor
 	spacer = base - 1
-	##Red Channel
-	if(R < spacer):
-		R += x
-	else:
-		R -= spacer
-		R += x
-	##Green Channel
-	if(G < spacer):
-		G += y
-	else:
-		G -= spacer
-		G += y
-	##Blue Channel
-	if(B < spacer):
-		B += z
-	else:
-		B -= spacer
-		B += z
+	
+	R = (R + x) if (R < spacer) else ((R - spacer) + x) #Red Channel
+	G = (G + y) if (G < spacer) else ((G - spacer) + y) #Green Channel
+	B = (B + z) if (B < spacer) else ((B - spacer) + z) #Blue Channel
+	
 	return tuple([R, G, B])
 def retrieveDataColorBaseX(finalColor, baseColor, base):
 	R, G, B = finalColor
 	x, y, z = baseColor
 	i, j, k = 0, 0, 0 #Data
 	spacer = base - 1
-	#Red Channel
-	if(x < spacer):
-		i = R - x
-	else:
-		i = R + spacer - x
-	#Green Channel
-	if(y < spacer):
-		j = G - y
-	else:
-		j = G + spacer - y
-	#Blue Channel
-	if(z < spacer):
-		k = B - z
-	else:
-		k = B + spacer - z
+	
+	i = (R - x) if (x < spacer) else (R + spacer - x) #Red Channel
+	j = (G - y) if (y < spacer) else (G + spacer - y) #Green Channel
+	k = (B - z) if (z < spacer) else (B + spacer - z) #Blue Channel
+	
 	return tuple([i, j, k])
 def retrieveBaseColor(finalColor, dataColor, base): #used for checker, ugly
 	R, G, B = finalColor

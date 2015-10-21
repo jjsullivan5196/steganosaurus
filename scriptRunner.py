@@ -33,9 +33,7 @@ description: Checks an image for injectability and presence of injected files.
 positional arguments:
   image       Image to check.'''
 ###Variable Defaults###
-command = []
-command.append(sys.executable)
-command.append("checker.py")
+command = [sys.executable, "checker.py"]
 opt = ["-1"]
 alg = "xth"
 colorOpts = ["black", "white", "red", "green", "blue", "yellow", "orange", "purple"]
