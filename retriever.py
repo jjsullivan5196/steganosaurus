@@ -1,12 +1,26 @@
 from PIL import Image
 from functions import *
+from algorithms import *
 import sys, io
 
-args = sys.argv
+args = sys.argv #("retriever.py", "File", "Output Override")
+##########################
+#########Override#########
+##########################
+#print(args)
+alg = args.pop(len(args) - 1)
+if(alg == "xth"):
+	xth = int(args.pop(len(args) - 1))
+elif(alg == "inColor"):
+	dist = int(args.pop(len(args) - 1))
+	B = int(args.pop(len(args) - 1))
+	G = int(args.pop(len(args) - 1))
+	R = int(args.pop(len(args) - 1))
 ##########################
 ##Opening the image file##
 ##########################
 myImage = Image.open(args[1])
+myImage = myImage.convert("RGB")
 xSize, ySize = myImage.size
 #print("Image Dimensions:\n    Width: " + str(xSize) + " Height: " + str(ySize))
 
@@ -31,27 +45,16 @@ byteNum = (colorTupleBaseXToVal(col3, 10) * 1000000) + (colorTupleBaseXToVal(col
 ######################################
 input("Press Enter to continue")
 
-for n in range(4, len(pixList)):
-	try:
-		x, y, z = pixList[n]
-		if(valIndex >= byteNum):
-			print("\n" + str(byteNum) + " bytes retrieved.")
-			break
-		if(matchesPattern(n)):
-			#Extract data from a pixel
-			baseColor = averageColor(pixList[n - 1], pixList[n + 1])
-			dataColor = retrieveDataColorBaseX((x, y, z), baseColor, 7)
-			data = colorTupleBaseXToVal(dataColor, 7)
-			f.append(data)
-			valIndex += 1
-			sys.stdout.write("\r" + str(int((valIndex/byteNum) * 100)) + "% Complete")
-			sys.stdout.flush()
-		else:
-			pass
-	except:
-		print("\nERROR: Could not retrieve bytes.")
-		print(str(valIndex) + "/" + str(byteNum) + " bytes retrieved before Error.")
-		exit()
+############################
+##Get File Data from Image##
+############################
+if(alg == "xth"):
+	f = xthPixelRetrieve([pixList, byteNum, [xth]])
+elif(alg == "inColor"):
+	f = inColorRetrieve([pixList, byteNum, [(R, G, B), dist]])
+else:
+	print("Algorithms other than xth not yet supported.")
+	os._exit(1)
 #Cut the filename component off the data
 nameLength = (f[0] + 1)
 f = f[nameLength:]

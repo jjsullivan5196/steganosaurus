@@ -1,8 +1,17 @@
-def matchesPattern(n, extraArgs=None):
+def xthPattern(n, xth = 3):
 	#Simple bool for matching pixels
 	#Literally allows for any complexity of function to be externalized here
 	#Returns True if pixel is to be written to, false if it isn't
-	if((n+1)%3==0):
+	if((n+1)%xth==0):
+		return True
+	return False
+def inColorPattern(n, avgColor, otherData = [(0, 0, 0), 10]):
+	#Simple bool for matching pixels
+	#Literally allows for any complexity of function to be externalized here
+	#Returns True if pixel is to be written to, false if it isn't
+	targetColor = otherData[0]
+	distance = otherData[1]
+	if((n%2 == 0) and (avgColor[0] in range(targetColor[0] - distance, targetColor[0] + distance + 1)) and (avgColor[1] in range(targetColor[1] - distance, targetColor[1] + distance + 1)) and (avgColor[2] in range(targetColor[2] - distance, targetColor[2] + distance + 1))):
 		return True
 	return False
 def getMaxBytesGivenPattern(size, headerSize, pattern, extraArgs = None):
@@ -10,6 +19,16 @@ def getMaxBytesGivenPattern(size, headerSize, pattern, extraArgs = None):
 	for x in range(headerSize, size):
 		if(pattern(x, extraArgs)):
 			s += 1
+	return s
+def getMaxBytesGivenColor(size, pixList, headerSize, pattern, extraArgs = None):
+	s = 0
+	for x in range(headerSize, size):
+		try:
+			baseColor = averageColor(pixList[x - 1], pixList[x + 1])
+			if(pattern(x, baseColor, extraArgs)):
+				s += 1
+		except:
+			break
 	return s
 ##Used for easy color changing
 def averageColor(c1, c2):
@@ -90,21 +109,30 @@ def retrieveBaseColor(finalColor, dataColor, base): #used for checker, ugly
 	spacer = base - 1
 	#Red Channel
 	if(x == 0):
-		i = R + spacer
+		if(R - x > spacer):
+			i = R + spacer
+		else:
+			i = R
 	elif((R + x - spacer) < spacer):
 		i = R - x
 	else:
 		i = R + spacer - x
 	#Green Channel
 	if(y == 0):
-		j = G + spacer
+		if(G - j > spacer):
+			j = G + spacer
+		else:
+			j = G
 	elif((G + y - spacer) < spacer):
 		j = G - y
 	else:
 		j = G + spacer - y
 	#Blue Channel
 	if(z == 0):
-		k = B + spacer
+		if(B - k > spacer):
+			k = B + spacer
+		else:
+			k = B
 	elif((B + z - spacer) < spacer):
 		k = B - z
 	else:
