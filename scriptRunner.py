@@ -1,20 +1,117 @@
-import os
-mode = str(input("Inject/Retrieve or Check? (i/r/c): "))
-if(mode == "i"):
-	image = str(input("Enter name of image file: "))
-	file = str(input("Enter name of file to inject: "))
-	outImage = str(input("Enter name of output image: "))
-	os.system("newAndImproved.py " + image + " " + file + " " + outImage)
-elif(mode == "r"):
-	image = str(input("Enter name of image file: "))
-	if(str(input("Override filename? (y/N): ")) == "y"):
-		outFile = str(input("Enter name of output file: "))
+import os, sys, subprocess
+
+args = sys.argv
+
+###HELP STRINGS###
+usage = '''usage: ''' + args[0]
+default = usage + ''' [-o X] mode [arguments]
+
+positional arguments:
+  -o X     Overrides the algorithm to use every Xth pixel. Default 3
+  mode     Program mode to use. Valid modes: inject, retrieve and check.
+  
+Entering a mode with no arguments will display help for that mode.'''
+injHelp = usage + ''' inject image infile outfile
+
+description: Injects the image provided with a file.
+
+positional arguments:
+  image       Image to hide file in.
+  infile      File to hide in image.
+  outfile     Name of final image.'''
+retHelp = usage + ''' retrieve image [outputName]
+
+description: Retrieves an injected image from image.
+
+positional arguments:
+  image                 Image to retrieve file from.
+  outputName            Name of output file (override default)'''
+checkHelp = usage + ''' check image
+
+description: Checks an image for injectability and presence of injected files.
+
+positional arguments:
+  image       Image to check.'''
+###Variable Defaults###
+command = [sys.executable, "checker.py"]
+opt = ["-1"]
+alg = "xth"
+colorOpts = ["black", "white", "red", "green", "blue", "yellow", "orange", "purple"]
+colorDict = {"black": (0, 0, 0), "white": (255, 255, 255), "red": (255, 0, 0), "orange":(255, 127, 0), "yellow":(255, 255, 0), "green":(0, 255, 0), "blue":(0, 0, 255), "purple": (255, 0, 255)}
+#First, read algorithm if possible
+if(len(args) >=3):
+	if(args[1] == "-a"):
+		args.pop(1)
+		alg = args.pop(1)
+if(alg == "inColor"):
+	opt = ["0", "0", "0", "10"]
+#Again, make sure there's some command to read
+if(len(args) >=3):
+	if(args[1] == "-o"):
+		if(alg == "xth"):
+			opt = []
+			args.pop(1)
+			opt.append(args.pop(1))
+		#There'll eventually be more here
+		elif(alg == "inColor"):
+			opt = []
+			args.pop(1)
+			if(args[1] in colorOpts):
+				opt.append(str(colorDict[args[1]][0]))
+				opt.append(str(colorDict[args[1]][1]))
+				opt.append(str(colorDict[args[1]][2]))
+				args.pop(1)
+			else:
+				opt.append(args.pop(1)) #R
+				opt.append(args.pop(1)) #G
+				opt.append(args.pop(1)) #B
+			try:
+				int(args[1])
+				opt.append(args.pop(1)) #Dist
+			except:
+				opt.append("10")
+			try:
+				for x in opt:
+					int(x)
+			except:
+				print("Malformed Options, use -o R G B distance")
+				os._exit(1)
+algArg = []
+for x in opt:
+	algArg.append(x)
+algArg.append(alg)
+###LOGIC###
+if(len(args) == 1):
+	print(default)
+	os._exit(1)
+for x in args[1:]:
+	command.append(x)
+for y in algArg:
+	command.append(y)
+#Non-options mode
+if(args[1] == "inject"):
+	if(len(args) == 2):
+		print(injHelp)
+	elif(len(args) != 5):
+		print("Invalid number of arguments. Type 'py " + args[0] + " inject' for help")
 	else:
-		outFile = ""
-	os.system("newAndImprovedReverser.py " + image + " " + outFile)
-elif(mode == "c"):
-	image = str(input("Enter name of image file: "))
-	mode = str(input("Max Bytes or Check for stored image?(m/c): "))
-	os.system("imageChecker.py " + image + " " + mode)
+		subprocess.call(command)
+elif(args[1] == "retrieve"):
+	if(len(args) == 2):
+		print(retHelp)
+	elif(len(args) > 4):
+		print("Invalid number of arguments. Type 'py " + args[0] + " retrieve' for help")
+	elif(len(args) == 3):
+		subprocess.call(command)
+	else:
+		subprocess.call(command)
+elif(args[1] == "check"):
+	if(len(args) == 2):
+		print(checkHelp)
+	elif(len(args) != 3):
+		print("Invalid number of arguments. Type 'py " + args[0] + " check' for help")
+	else:
+		subprocess.call(command)
 else:
-	print("Invalid mode, please re-run launcher.")
+	print("Invalid Mode.")
+	print(default)
