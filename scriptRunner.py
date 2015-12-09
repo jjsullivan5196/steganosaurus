@@ -34,7 +34,7 @@ positional arguments:
   image       Image to check.'''
 ###Variable Defaults###
 command = [sys.executable, "checker.py"]
-opt = ["-1"]
+opt = ["3"]
 alg = "xth"
 colorOpts = ["black", "white", "red", "green", "blue", "yellow", "orange", "purple"]
 colorDict = {"black": (0, 0, 0), "white": (255, 255, 255), "red": (255, 0, 0), "orange":(255, 127, 0), "yellow":(255, 255, 0), "green":(0, 255, 0), "blue":(0, 0, 255), "purple": (255, 0, 255)}
