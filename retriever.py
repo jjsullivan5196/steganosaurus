@@ -63,5 +63,5 @@ file = io.open(fileName, 'wb')
 try:
 	file.write(bytearray(f))
 	print("Bytes written to " + fileName)
-except:
-	print("Could not write bytes to file.")
+except Exception as e:
+	print("Could not write bytes to file.\n" + str(e))

@@ -167,6 +167,7 @@ if(alg == "xth"):
 		if(xth == -1): #If we're gonna try to select the best
 			#Determine the best channel
 			xth = determineBestChannel(xSize, ySize, xthPattern, fileSize)
+			algorithmCommand[0] = str(xth)
 			if(xth == -1): #If there is no best
 				#Display the max
 				maxBytes = getMaxBytesGivenPattern(xSize * ySize, 4, xthPattern, 2)
@@ -223,7 +224,8 @@ if(same and byteNum < 999999999):
 		#Pasted from Retriever, repurposed for finding filename
 		result = scanXth(pixList)
 		if(result[0] == True):
-			algArgs = str(result[2])
+			#algArgs = str(result[2])
+			algorithmCommand[0] = str(result[2])
 			command.append(args[2])
 			print("Stored File Detected:")
 			print("    Stored File Name:    " + result[1])
